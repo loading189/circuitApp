@@ -17,6 +17,7 @@ interface WireState {
   completeWireTo: (endHoleId: string) => void;
   deleteWire: (wireId: string) => void;
   updateWireColor: (wireId: string, color: WireColor) => void;
+  clearAll: () => void;
 }
 
 export const useWireStore = create<WireState>((set, get) => ({
@@ -63,4 +64,5 @@ export const useWireStore = create<WireState>((set, get) => ({
     set((state) => ({
       wires: state.wires.map((wire) => (wire.id === wireId ? { ...wire, color } : wire)),
     })),
+  clearAll: () => set({ wires: [], wireStartHoleId: null, wirePreviewHoleId: null, hoveredWireId: null }),
 }));

@@ -1,0 +1,36 @@
+import type { LessonDefinition } from '@/features/lessons/lessonTypes';
+
+export const rcChargeLesson: LessonDefinition = {
+  id: 'lesson-rc-charge',
+  slug: 'rc-charge-curve',
+  title: 'Verse 4 · Charging in Time',
+  subtitle: 'Resistor-capacitor networks create measurable time behavior.',
+  conceptTitle: 'RC Charging',
+  conceptSummary: 'A capacitor charges through a resistor with a curved voltage rise over time.',
+  difficulty: 'intermediate',
+  estimatedMinutes: 18,
+  requiredComponents: ['battery-source', 'resistor', 'capacitor'],
+  optionalComponents: ['spst-switch', 'multimeter'],
+  recommendedStartingBoardState: 'Start with source and rails only.',
+  learningObjectives: ['Build RC charging path.', 'Watch voltage trend over time.', 'Relate R and C to response speed.'],
+  buildGoal: 'Build a simple RC charging circuit and inspect voltage trend.',
+  steps: [
+    { id: 'rc-place', type: 'place_component', title: 'Place resistor and capacitor', guidance: 'Set capacitor to 10µF for visible trend.' },
+    { id: 'rc-wire', type: 'wire_connection', title: 'Wire source -> resistor -> capacitor -> ground', guidance: 'Keep capacitor node probe-accessible.' },
+    { id: 'rc-run', type: 'run_simulation', title: 'Run simulation', guidance: 'Observe changing node voltage over time.' },
+    { id: 'rc-observe', type: 'observe_behavior', title: 'Inspect trend panel', guidance: 'Trend should rise then flatten.' },
+    { id: 'rc-complete', type: 'complete', title: 'Complete', guidance: 'Capture what changes when R or C increases.' },
+  ],
+  observations: ['Capacitor voltage rises gradually.', 'Higher resistance slows charging.', 'Waveform panel should show smooth curve-like rise.'],
+  breakExperiments: [{ id: 'rc-short', title: 'Short capacitor node to ground', prompt: 'Temporarily force node low and observe recovery.', expectedLearning: 'Charge state is path-dependent and dynamic.' }],
+  explanationPrompts: ['Why is RC response not instant?'],
+  commonMistakes: ['Capacitor both legs on same strip.', 'No resistor in charge path.', 'Assuming trend should be linear.'],
+  checkpoints: [
+    { id: 'cp-rc-components', type: 'components_placed', label: 'RC components placed', description: 'Source, resistor, capacitor are present.' },
+    { id: 'cp-rc-run', type: 'simulation_run', label: 'Simulation run', description: 'Simulation status is running or stepped.' },
+  ],
+  tutorPromptHints: ['What should the capacitor node do over time?', 'How do I slow the charging curve?'],
+  tags: ['timing', 'rc'],
+  relatedComponents: ['resistor', 'capacitor', 'battery-source'],
+  professionalToolRecommendations: ['Waveform panel', 'Instruments', 'Flow view'],
+};

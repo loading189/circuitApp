@@ -1,5 +1,6 @@
 import { BreadboardSvg } from '@/components/breadboard/BreadboardSvg';
 import { WorkbenchToolbar } from '@/components/breadboard/WorkbenchToolbar';
+import { FlowOverlay } from '@/components/instruments/FlowOverlay';
 import { CircuitPostcard } from '@/components/learning/CircuitPostcard';
 import { useSimulationStore } from '@/features/simulation/simulationStore';
 
@@ -11,6 +12,7 @@ export const Workbench = (): JSX.Element => {
       <div className={`workbench-shell relative ${status === 'running' ? 'workbench-shell-live' : ''}`}>
         <WorkbenchToolbar />
         <BreadboardSvg />
+        <FlowOverlay />
       </div>
       <CircuitPostcard />
     </main>

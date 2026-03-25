@@ -1,9 +1,16 @@
-import type { CircuitPostcardData } from '@/features/learning/postcardTypes';
+import type { LessonDefinition } from '@/features/lessons/lessonTypes';
 
-export const CircuitPostcardCompact = ({ card }: { card: CircuitPostcardData }): JSX.Element => (
+interface CircuitPostcardCompactProps {
+  lesson: LessonDefinition;
+  stepIndex: number;
+  totalSteps: number;
+}
+
+export const CircuitPostcardCompact = ({ lesson, stepIndex, totalSteps }: CircuitPostcardCompactProps): JSX.Element => (
   <div>
-    <p className="text-[10px] uppercase tracking-[0.15em] text-cyan-200">{card.conceptTitle}</p>
-    <h3 className="text-sm font-semibold text-token-primary">{card.title}</h3>
-    <p className="mt-1 text-xs text-token-secondary">{card.shortSummary}</p>
+    <p className="text-[10px] uppercase tracking-[0.15em] text-cyan-200">{lesson.conceptTitle}</p>
+    <h3 className="text-sm font-semibold text-token-primary">{lesson.title}</h3>
+    <p className="mt-1 text-xs text-token-secondary">{lesson.conceptSummary}</p>
+    <p className="mt-1 text-[11px] text-token-secondary">Step {Math.min(stepIndex + 1, totalSteps)}/{totalSteps}</p>
   </div>
 );

@@ -1,5 +1,7 @@
 import { ModeSwitcher } from './ModeSwitcher';
 import { useLabUiStore } from '@/features/ui/labUiStore';
+import { lessonRegistry } from '@/features/lessons/lessonRegistry';
+import { useLessonStore } from '@/features/lessons/lessonStore';
 import { useSimulationStore } from '@/features/simulation/simulationStore';
 
 const HeaderButton = ({ label, onClick }: { label: string; onClick: () => void }): JSX.Element => (
@@ -9,7 +11,7 @@ const HeaderButton = ({ label, onClick }: { label: string; onClick: () => void }
 );
 
 export const AppHeader = (): JSX.Element => {
-  const lesson = useLabUiStore((state) => state.activeLessonTitle);
+  const lesson = lessonRegistry.getById(useLessonStore((state) => state.activeLessonId ?? ''))?.title ?? useLabUiStore((state) => state.activeLessonTitle);
   const { run, stop, step, reset, status } = useSimulationStore();
 
   return (

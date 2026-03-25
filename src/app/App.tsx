@@ -5,6 +5,8 @@ import { RightSidebar } from '@/components/layout/RightSidebar';
 import { Workbench } from '@/components/workspace/Workbench';
 import { useSelectionStore } from '@/features/board/selectionStore';
 import { useComponentPlacementStore } from '@/features/components/componentPlacement';
+import { useLessonStore } from '@/features/lessons/lessonStore';
+import { useSimulationStore } from '@/features/simulation/simulationStore';
 import { useWireStore } from '@/features/wiring/wirePlacement';
 
 export const App = (): JSX.Element => {
@@ -14,6 +16,10 @@ export const App = (): JSX.Element => {
   const setSelectedWireId = useSelectionStore((state) => state.setSelectedWireId);
   const deleteComponent = useComponentPlacementStore((state) => state.deleteComponent);
   const deleteWire = useWireStore((state) => state.deleteWire);
+  const clearWires = useWireStore((state) => state.clearAll);
+  const clearComponents = useComponentPlacementStore((state) => state.clearAll);
+  const resetSimulation = useSimulationStore((state) => state.reset);
+  const resetBoardRequestedAt = useLessonStore((state) => state.resetBoardRequestedAt);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent): void => {
@@ -36,6 +42,17 @@ export const App = (): JSX.Element => {
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [deleteComponent, deleteWire, selectedComponentId, selectedWireId, setSelectedComponentId, setSelectedWireId]);
+
+  useEffect(() => {
+    if (!resetBoardRequestedAt) {
+      return;
+    }
+    clearComponents();
+    clearWires();
+    resetSimulation();
+    setSelectedComponentId(null);
+    setSelectedWireId(null);
+  }, [clearComponents, clearWires, resetBoardRequestedAt, resetSimulation, setSelectedComponentId, setSelectedWireId]);
 
   return (
     <div className="app-shell">

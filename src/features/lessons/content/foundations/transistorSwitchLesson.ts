@@ -1,0 +1,38 @@
+import type { LessonDefinition } from '@/features/lessons/lessonTypes';
+
+export const transistorSwitchLesson: LessonDefinition = {
+  id: 'lesson-transistor-switch',
+  slug: 'transistor-as-switch',
+  title: 'Verse 6 · Small Signal, Bigger Control',
+  subtitle: 'Use transistor base control to switch collector current.',
+  conceptTitle: 'Transistor as a Switch',
+  conceptSummary: 'A base drive path can control a larger collector-emitter path.',
+  difficulty: 'advanced',
+  estimatedMinutes: 22,
+  requiredComponents: ['battery-source', 'resistor', 'npn-transistor', 'led'],
+  optionalComponents: ['spst-switch'],
+  recommendedStartingBoardState: 'Start with clean board and check transistor pinout labels.',
+  learningObjectives: ['Wire NPN transistor switch topology.', 'Differentiate base and load paths.', 'Diagnose missing base drive.'],
+  buildGoal: 'Drive LED load from collector path and control it through base resistor.',
+  steps: [
+    { id: 'tx-place', type: 'place_component', title: 'Place NPN, LED, and two resistors', guidance: 'Reserve one resistor for base path.' },
+    { id: 'tx-wire-main', type: 'wire_connection', title: 'Wire collector load path', guidance: 'Source -> resistor -> LED -> collector, emitter to ground.' },
+    { id: 'tx-wire-base', type: 'wire_connection', title: 'Wire base drive', guidance: 'Source control node through resistor into base pin.' },
+    { id: 'tx-run', type: 'run_simulation', title: 'Run and toggle base drive', guidance: 'Observe LED switching behavior.' },
+    { id: 'tx-diagnose', type: 'inspect_diagnostic', title: 'Inspect diagnostics', guidance: 'Look for base drive or pinout issues.' },
+    { id: 'tx-explain', type: 'explain', title: 'Explain behavior', guidance: 'Describe how base path gates collector current.' },
+    { id: 'tx-complete', type: 'complete', title: 'Complete', guidance: 'Checkpoint after successful switching.' },
+  ],
+  observations: ['Collector path turns on with valid base drive.', 'Weak or missing base current keeps load off.', 'Flow should emphasize separate control vs load paths.'],
+  breakExperiments: [{ id: 'tx-remove-base', title: 'Open base resistor path', prompt: 'Disconnect base drive and compare state.', expectedLearning: 'Main load path depends on control path condition.' }],
+  explanationPrompts: ['Why does the LED path depend on base current?'],
+  commonMistakes: ['Misidentifying E/B/C pins.', 'No base resistor.', 'Expecting transistor to act like ideal relay.'],
+  checkpoints: [
+    { id: 'cp-tx-components', type: 'components_placed', label: 'Switch components placed', description: 'Source, transistor, resistor(s), and LED present.' },
+    { id: 'cp-tx-explain', type: 'explanation_acknowledged', label: 'Reflection captured', description: 'Learner advanced past explanation step.' },
+  ],
+  tutorPromptHints: ['Help me verify transistor pinout and base path.', 'What breaks first when base resistor is removed?'],
+  tags: ['transistor', 'switching'],
+  relatedComponents: ['npn-transistor', 'resistor', 'led', 'battery-source'],
+  professionalToolRecommendations: ['Diagnostics', 'Explain panel', 'Flow view'],
+};

@@ -1,6 +1,7 @@
 import { useBoardStore } from '@/features/board/boardStore';
 import { useSelectionStore } from '@/features/board/selectionStore';
 import { useComponentPlacementStore } from '@/features/components/componentPlacement';
+import { getActiveLessonContext } from '@/features/lessons/lessonContextAdapter';
 import { useSimulationStore } from '@/features/simulation/simulationStore';
 import { componentRegistry } from '@/features/components/componentRegistry';
 import { useWireStore } from '@/features/wiring/wirePlacement';
@@ -15,12 +16,13 @@ export const buildTutorContextPayload = (userMessage: string, conversation: Tuto
   const selectedHoleId = useBoardStore.getState().selectedHoleId;
   const simulation = useSimulationStore.getState();
   const wires = useWireStore.getState().wires;
+  const lessonContext = getActiveLessonContext();
 
   return {
     mode,
-    activeLesson,
-    lessonObjectives: ['Complete closed loop', 'Apply resistor current limiting', 'Verify LED polarity'],
-    currentStep: 'Build path from + rail to GND through resistor and LED',
+    activeLesson: lessonContext?.lessonTitle ?? activeLesson,
+    lessonObjectives: lessonContext?.expectedObservations ?? ['Complete closed loop', 'Apply resistor current limiting', 'Verify LED polarity'],
+    currentStep: lessonContext?.currentStepLabel ?? 'Build path from + rail to GND through resistor and LED',
     componentInventory: components.map((component) => ({
       id: component.id,
       type: component.type,
@@ -37,7 +39,10 @@ export const buildTutorContextPayload = (userMessage: string, conversation: Tuto
       const definition = componentRegistry.getByType(component.type);
       return `${component.name}: ${definition.displayName} (${definition.simulationSupport}) at ${component.terminals.map((terminal) => terminal.holeId).join(', ')}`;
     }),
-    diagnostics: ['Deterministic diagnostics available in Diagnostics tab.'],
+    diagnostics: [
+      'Deterministic diagnostics available in Diagnostics tab.',
+      ...(lessonContext ? [`Lesson context: ${lessonContext.progressLabel}. Common mistake: ${lessonContext.commonMistakes[0] ?? 'none'}.`] : []),
+    ],
     recentUserChanges: useComponentPlacementStore
       .getState()
       .components.slice(-3)
