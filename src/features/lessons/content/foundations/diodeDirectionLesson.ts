@@ -1,0 +1,37 @@
+import type { LessonDefinition } from '@/features/lessons/lessonTypes';
+
+export const diodeDirectionLesson: LessonDefinition = {
+  id: 'lesson-diode-direction',
+  slug: 'diode-direction-forward-bias',
+  title: 'Verse 5 · One-Way Gate',
+  subtitle: 'Diode orientation controls whether current path is allowed.',
+  conceptTitle: 'Diode Direction and Forward Bias',
+  conceptSummary: 'Diodes conduct primarily from anode to cathode when forward-biased.',
+  difficulty: 'intermediate',
+  estimatedMinutes: 14,
+  requiredComponents: ['battery-source', 'resistor', 'generic-diode'],
+  optionalComponents: ['led'],
+  recommendedStartingBoardState: 'Clear board and start with source rails.',
+  learningObjectives: ['Identify anode/cathode orientation.', 'Observe forward vs reverse behavior.', 'Use diagnostics for orientation mistakes.'],
+  buildGoal: 'Build series source-resistor-diode path and test both orientations.',
+  steps: [
+    { id: 'diode-place', type: 'place_component', title: 'Place diode with visible orientation', guidance: 'Align cathode stripe intentionally.' },
+    { id: 'diode-wire', type: 'wire_connection', title: 'Wire through resistor and diode', guidance: 'Complete loop with source return.' },
+    { id: 'diode-run', type: 'run_simulation', title: 'Run forward-biased case', guidance: 'Confirm path activity in Flow mode.' },
+    { id: 'diode-break', type: 'break_circuit', title: 'Reverse diode', guidance: 'Flip orientation and compare behavior.' },
+    { id: 'diode-diagnose', type: 'inspect_diagnostic', title: 'Check diagnostics', guidance: 'Read hints for blocked or reverse-biased path.' },
+    { id: 'diode-complete', type: 'complete', title: 'Complete', guidance: 'Summarize forward vs reverse bias effect.' },
+  ],
+  observations: ['Forward orientation allows current path.', 'Reverse orientation blocks path strongly.', 'Flow view should mute blocked branch.'],
+  breakExperiments: [{ id: 'diode-no-return', title: 'Break return leg', prompt: 'Open return while forward-biased.', expectedLearning: 'Orientation alone cannot help if loop is open.' }],
+  explanationPrompts: ['How can I quickly spot a reversed diode on breadboard?'],
+  commonMistakes: ['Confusing cathode stripe direction.', 'No resistor in series.', 'Relying on color alone instead of symbols.'],
+  checkpoints: [
+    { id: 'cp-diode-components', type: 'components_placed', label: 'Diode path placed', description: 'Source + resistor + diode are placed.' },
+    { id: 'cp-diode-break', type: 'break_experiment', label: 'Break experiment attempted', description: 'User advanced beyond break-circuit step.' },
+  ],
+  tutorPromptHints: ['Why does flow disappear when I reverse this diode?', 'Quiz me on forward bias.'],
+  tags: ['diodes', 'polarity'],
+  relatedComponents: ['generic-diode', 'resistor', 'battery-source'],
+  professionalToolRecommendations: ['Flow view', 'Diagnostics', 'Tutor'],
+};

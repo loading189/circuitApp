@@ -1,0 +1,37 @@
+import type { LessonDefinition } from '@/features/lessons/lessonTypes';
+
+export const closedLoopLesson: LessonDefinition = {
+  id: 'lesson-closed-loop',
+  slug: 'closed-loop-complete-circuit',
+  title: 'Verse 1 · Close the Loop',
+  subtitle: 'Every working circuit needs a full return path.',
+  conceptTitle: 'Closed Circuit Fundamentals',
+  conceptSummary: 'Current needs a complete path from source to load and back to source.',
+  difficulty: 'beginner',
+  estimatedMinutes: 10,
+  requiredComponents: ['battery-source', 'resistor', 'led'],
+  optionalComponents: ['spst-switch'],
+  recommendedStartingBoardState: 'Empty board with default rails.',
+  learningObjectives: ['Recognize complete vs broken paths.', 'Build first functional loop.', 'Use flow view to inspect continuity.'],
+  buildGoal: 'Build a battery → resistor → LED → battery-return loop that lights the LED.',
+  steps: [
+    { id: 'loop-intro', type: 'intro', title: 'Read the path', guidance: 'Plan one complete loop before placing parts.' },
+    { id: 'loop-place', type: 'place_component', title: 'Place source, resistor, and LED', guidance: 'Place parts with room for clean wiring.' },
+    { id: 'loop-wire', type: 'wire_connection', title: 'Complete the return path', guidance: 'Connect from source through resistor and LED then back.' },
+    { id: 'loop-run', type: 'run_simulation', title: 'Run simulation', guidance: 'Start simulation to verify a live loop.', expectedOutcome: 'LED turns on when path is closed.' },
+    { id: 'loop-observe', type: 'observe_behavior', title: 'Observe flow', guidance: 'Turn on Flow view and verify the active path is continuous.' },
+    { id: 'loop-complete', type: 'complete', title: 'Complete', guidance: 'Checkpoint complete once loop behavior is stable.' },
+  ],
+  observations: ['Open return path kills current.', 'Closed path lights LED.', 'Flow overlay highlights loop continuity.'],
+  breakExperiments: [{ id: 'loop-break-wire', title: 'Lift one wire', prompt: 'Disconnect one return wire and rerun.', expectedLearning: 'No closed path means no sustained current.' }],
+  explanationPrompts: ['Why does the LED stop immediately when one wire is removed?'],
+  commonMistakes: ['LED reversed polarity.', 'Component legs in same node strip.', 'Missing return to source negative terminal.'],
+  checkpoints: [
+    { id: 'cp-loop-components', type: 'components_placed', label: 'Placed required parts', description: 'Battery, resistor, LED are present.' },
+    { id: 'cp-loop-run', type: 'simulation_run', label: 'Simulation started', description: 'Simulation was run at least once.' },
+  ],
+  tutorPromptHints: ['Explain closed loops in this exact board.', 'Why is this path broken?'],
+  tags: ['foundations', 'closed-loop'],
+  relatedComponents: ['battery-source', 'resistor', 'led'],
+  professionalToolRecommendations: ['Flow view', 'Diagnostics', 'Explain panel'],
+};

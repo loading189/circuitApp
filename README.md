@@ -225,3 +225,99 @@ The left library now supports:
 2. Include terminals, defaults, editable property schema, and learning copy.
 3. Assign a preview family and preferred kind.
 4. The component automatically participates in library search/filter, inspector metadata, explain/tutor context, and preview resolution.
+
+## Lesson-driven workbook architecture (new)
+
+The lab now ships a first-class lesson domain under `src/features/lessons/`.
+
+### Lesson model and registry
+
+- `lessonTypes.ts` defines a strongly typed lesson contract:
+  - lesson metadata, difficulty, component requirements, steps, observations, break experiments, checkpoints, tutor hints.
+- `lessonRegistry.ts` registers the first six foundation "verses":
+  1. Closed loop / complete circuit
+  2. LED current limiting
+  3. Voltage divider
+  4. RC charging
+  5. Diode direction / forward bias
+  6. Transistor switch
+- Lessons are content-driven files in `src/features/lessons/content/foundations/`.
+
+### Lesson state and progress
+
+- `lessonStore.ts` tracks:
+  - active lesson
+  - active step
+  - postcard state (compact/expanded/minimized/completed)
+  - postcard drag position + pin state
+  - component-library lesson filter mode (`full | lesson | required`)
+- `lessonProgress.ts` evaluates lightweight checkpoints from topology/interaction state.
+- `lessonContextAdapter.ts` exposes normalized context for Tutor, Explain, Diagnostics, and Instruments.
+
+## Postcard behavior
+
+The lesson postcard is now a movable lesson surface (`CircuitPostcard.tsx`):
+
+- draggable (unless pinned)
+- pinnable
+- minimizable/expandable
+- step-aware navigation
+- progress/checkpoint visibility
+- quick actions:
+  - next/previous step
+  - ask tutor
+  - show required parts only
+  - highlight lesson components
+  - reset lesson board state
+
+## Lesson-filtered component workflow
+
+`ComponentLibrary.tsx` now supports lesson-aware filtering:
+
+- full library
+- lesson components
+- required-only
+
+Each listed component can show lesson status (`required`/`optional`) and placed count during an active lesson.
+
+## Flow visualization design
+
+Flow is implemented as a toggleable overlay domain:
+
+- `src/features/flow/flowVisualizationStore.ts`
+- `src/features/flow/flowOverlayEngine.ts`
+- `src/components/instruments/FlowOverlay.tsx`
+- `src/components/instruments/FlowSettingsPanel.tsx`
+
+Behavior:
+
+- ON/OFF flow control
+- active/inactive/blocked path rendering
+- direction arrow cues for active paths
+- adjustable intensity and broken-path emphasis
+
+This first pass uses simulation voltage differentials where available and gracefully degrades when values are unknown.
+
+## Tool/panel model
+
+The right rail now uses a modular panel controller:
+
+- `src/features/ui/toolPanelStore.ts`
+- `src/components/layout/ToolPanelFrame.tsx`
+
+Panels can be selected and then minimized/pinned per tool (Inspector, Tutor, Explain, Diagnostics, Instruments, Flow).
+
+## Lesson integration with deterministic systems
+
+- Tutor context includes active lesson, current step, expected observations, mistakes, and checkpoint progress.
+- Explain panel includes lesson concept + step context.
+- Diagnostics panel shows lesson-aware focus hints.
+- Instruments panel surfaces lesson progress next to probe/supply data.
+
+## Adding a new lesson
+
+1. Create a new lesson file in `src/features/lessons/content/...` exporting a `LessonDefinition`.
+2. Register it in `lessonRegistry.ts`.
+3. Ensure `requiredComponents` match known component type IDs.
+4. Add clear steps, observations, common mistakes, and checkpoints.
+5. Optionally include focused tutor prompt hints and recommended professional tools.

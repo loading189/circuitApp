@@ -3,6 +3,9 @@ import { useSelectionStore } from '@/features/board/selectionStore';
 import { useComponentPlacementStore } from '@/features/components/componentPlacement';
 import { COMPONENT_CATEGORIES, SIMULATION_SUPPORT_TIERS, type ComponentType, type SimulationSupportTier } from '@/features/components/componentTypes';
 import { componentRegistry } from '@/features/components/componentRegistry';
+import { filterComponentsForLesson, getLessonComponentStatus } from '@/features/lessons/lessonFilters';
+import { lessonRegistry } from '@/features/lessons/lessonRegistry';
+import { useLessonStore } from '@/features/lessons/lessonStore';
 import { searchComponents } from '@/features/components/componentSearch';
 
 export const ComponentLibrary = (): JSX.Element => {
@@ -14,18 +17,28 @@ export const ComponentLibrary = (): JSX.Element => {
 
   const setPlacingType = useComponentPlacementStore((state) => state.setPlacingType);
   const placingType = useComponentPlacementStore((state) => state.placingType);
+  const components = useComponentPlacementStore((state) => state.components);
   const setToolMode = useSelectionStore((state) => state.setToolMode);
+  const activeLessonId = useLessonStore((state) => state.activeLessonId);
+  const libraryMode = useLessonStore((state) => state.libraryMode);
+  const setLibraryMode = useLessonStore((state) => state.setLibraryMode);
 
-  const results = useMemo(
-    () =>
-      searchComponents(componentRegistry.all, {
+  const activeLesson = lessonRegistry.getById(activeLessonId ?? '');
+
+  const results = useMemo(() => {
+    const filteredByLesson = filterComponentsForLesson(componentRegistry.all, {
+      libraryMode,
+      requiredComponents: activeLesson?.requiredComponents ?? [],
+      optionalComponents: activeLesson?.optionalComponents ?? [],
+    });
+
+    return searchComponents(filteredByLesson, {
         query,
         category,
         supportTier,
         beginnerOnly,
-      }),
-    [query, category, supportTier, beginnerOnly],
-  );
+      });
+  }, [activeLesson?.optionalComponents, activeLesson?.requiredComponents, beginnerOnly, category, libraryMode, query, supportTier]);
 
   const selectedDefinition = useMemo(
     () => componentRegistry.all.find((item) => item.type === (activeType ?? placingType ?? null)) ?? null,
@@ -48,6 +61,13 @@ export const ComponentLibrary = (): JSX.Element => {
   return (
     <section className="mt-3 min-h-0 flex-1 overflow-hidden">
       <h2 className="panel-title">Component Encyclopedia</h2>
+      {activeLesson ? (
+        <div className="mb-2 flex items-center gap-1 text-[11px]">
+          <button type="button" className={`chip-btn ${libraryMode === 'full' ? 'chip-btn-active' : ''}`} onClick={() => setLibraryMode('full')}>Full</button>
+          <button type="button" className={`chip-btn ${libraryMode === 'lesson' ? 'chip-btn-active' : ''}`} onClick={() => setLibraryMode('lesson')}>Lesson</button>
+          <button type="button" className={`chip-btn ${libraryMode === 'required' ? 'chip-btn-active' : ''}`} onClick={() => setLibraryMode('required')}>Required</button>
+        </div>
+      ) : null}
       <input
         value={query}
         onChange={(event) => setQuery(event.target.value)}
@@ -76,6 +96,8 @@ export const ComponentLibrary = (): JSX.Element => {
         <div className="space-y-1.5">
           {results.map((item) => {
             const active = item.type === placingType;
+            const lessonStatus = getLessonComponentStatus(item.type, activeLesson?.requiredComponents ?? [], activeLesson?.optionalComponents ?? []);
+            const placedCount = components.filter((component) => component.type === item.type).length;
             return (
               <button key={item.type} type="button" onClick={() => selectType(item.type)} className={`component-tile ${active ? 'component-tile-active' : ''}`}>
                 <span className="icon-pill">{item.visual2D.icon}</span>
@@ -83,6 +105,11 @@ export const ComponentLibrary = (): JSX.Element => {
                   <span className="block text-xs font-medium">{item.displayName}</span>
                   <span className="block text-[11px] text-token-secondary">{item.description}</span>
                   <span className="block text-[10px] uppercase tracking-[0.08em] text-cyan-300">{item.category} · {item.simulationSupport}</span>
+                  {activeLesson && lessonStatus !== 'not-in-lesson' ? (
+                    <span className={`block text-[10px] uppercase tracking-[0.08em] ${lessonStatus === 'required' ? 'text-emerald-300' : 'text-sky-300'}`}>
+                      {lessonStatus} · placed {placedCount}
+                    </span>
+                  ) : null}
                 </span>
               </button>
             );

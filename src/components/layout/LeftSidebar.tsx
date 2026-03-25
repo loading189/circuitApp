@@ -1,4 +1,5 @@
 import { ComponentLibrary } from '@/components/parts/ComponentLibrary';
+import { LessonPicker } from '@/components/learning/LessonPicker';
 
 export const LeftSidebar = (): JSX.Element => {
   return (
@@ -7,6 +8,7 @@ export const LeftSidebar = (): JSX.Element => {
         <h2 className="panel-title">Tooling</h2>
         <p className="text-xs text-token-secondary">Use the on-canvas tool bar for Select, Wire, Probe, Pan, and Reset View.</p>
       </section>
+      <LessonPicker />
       <ComponentLibrary />
     </aside>
   );

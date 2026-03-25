@@ -2,6 +2,7 @@ import { useBoardStore } from '@/features/board/boardStore';
 import { useSelectionStore } from '@/features/board/selectionStore';
 import { useComponentPlacementStore } from '@/features/components/componentPlacement';
 import { explainSelection } from '@/features/explanations/explainEngine';
+import { getActiveLessonContext } from '@/features/lessons/lessonContextAdapter';
 import { useSimulationStore } from '@/features/simulation/simulationStore';
 
 export const ExplainPanel = (): JSX.Element => {
@@ -13,6 +14,7 @@ export const ExplainPanel = (): JSX.Element => {
   const snapshot = useSimulationStore((state) => state.snapshot);
 
   const explanation = explainSelection({ selectedComponent, selectedHoleId, snapshot });
+  const lessonContext = getActiveLessonContext();
 
   return (
     <section className="rail-panel">
@@ -35,6 +37,12 @@ export const ExplainPanel = (): JSX.Element => {
           <dt className="text-token-secondary">Why it matters</dt>
           <dd>{explanation.whyItMatters}</dd>
         </div>
+        {lessonContext ? (
+          <div>
+            <dt className="text-token-secondary">Lesson concept</dt>
+            <dd>{lessonContext.conceptTitle} · {lessonContext.currentStepLabel}</dd>
+          </div>
+        ) : null}
       </dl>
     </section>
   );

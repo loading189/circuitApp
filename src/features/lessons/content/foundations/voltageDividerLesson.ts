@@ -1,0 +1,36 @@
+import type { LessonDefinition } from '@/features/lessons/lessonTypes';
+
+export const voltageDividerLesson: LessonDefinition = {
+  id: 'lesson-voltage-divider',
+  slug: 'voltage-divider',
+  title: 'Verse 3 · Split Voltage',
+  subtitle: 'Two resistors create a predictable fraction of input voltage.',
+  conceptTitle: 'Voltage Divider',
+  conceptSummary: 'Series resistors divide source voltage in proportion to resistance.',
+  difficulty: 'beginner',
+  estimatedMinutes: 16,
+  requiredComponents: ['battery-source', 'resistor'],
+  optionalComponents: ['multimeter', 'led'],
+  recommendedStartingBoardState: 'Empty board or previous lesson cleared.',
+  learningObjectives: ['Build resistor divider topology.', 'Probe midpoint voltage.', 'Predict effect of resistor ratio change.'],
+  buildGoal: 'Create a two-resistor divider and verify midpoint voltage with probe.',
+  steps: [
+    { id: 'div-place', type: 'place_component', title: 'Place two resistors in series', guidance: 'Ensure midpoint node is accessible for probing.' },
+    { id: 'div-wire', type: 'wire_connection', title: 'Connect to source rails', guidance: 'Top to +, bottom to ground.' },
+    { id: 'div-probe', type: 'probe_node', title: 'Probe midpoint', guidance: 'Measure divider output node.' },
+    { id: 'div-observe', type: 'observe_behavior', title: 'Adjust ratio', guidance: 'Change one resistor and observe output shift.' },
+    { id: 'div-complete', type: 'complete', title: 'Complete', guidance: 'Confirm output follows resistor ratio trend.' },
+  ],
+  observations: ['Equal resistors yield near half supply.', 'Larger bottom resistor raises midpoint voltage.', 'Flow remains continuous in valid divider loop.'],
+  breakExperiments: [{ id: 'div-open-mid', title: 'Open top leg', prompt: 'Disconnect top resistor from source and inspect midpoint.', expectedLearning: 'Midpoint collapses without proper drive path.' }],
+  explanationPrompts: ['Explain divider ratio in plain language.'],
+  commonMistakes: ['Accidentally wiring resistors in parallel.', 'Probing wrong node.', 'Forgetting ground reference.'],
+  checkpoints: [
+    { id: 'cp-div-components', type: 'components_placed', label: 'Divider built', description: 'At least two resistors and source present.' },
+    { id: 'cp-div-probe', type: 'node_probed', label: 'Midpoint measured', description: 'User probed any node during lesson.' },
+  ],
+  tutorPromptHints: ['Quiz me on divider ratios.', 'Why is my midpoint not half?'],
+  tags: ['foundations', 'voltage-divider'],
+  relatedComponents: ['resistor', 'battery-source'],
+  professionalToolRecommendations: ['Instruments', 'Explain panel'],
+};

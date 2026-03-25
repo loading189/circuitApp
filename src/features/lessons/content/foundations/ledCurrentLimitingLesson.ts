@@ -1,0 +1,37 @@
+import type { LessonDefinition } from '@/features/lessons/lessonTypes';
+
+export const ledCurrentLimitingLesson: LessonDefinition = {
+  id: 'lesson-led-current-limiter',
+  slug: 'led-current-limiting',
+  title: 'Verse 2 · Protect the LED',
+  subtitle: 'Use resistance to control current safely.',
+  conceptTitle: 'LED Current Limiting',
+  conceptSummary: 'A series resistor sets LED current and prevents overdrive.',
+  difficulty: 'beginner',
+  estimatedMinutes: 14,
+  requiredComponents: ['battery-source', 'resistor', 'led'],
+  optionalComponents: ['spst-switch', 'multimeter'],
+  recommendedStartingBoardState: 'Closed loop from previous lesson is helpful.',
+  learningObjectives: ['Choose resistor for safe LED behavior.', 'Relate resistor value to brightness.', 'Use voltage probe on series path.'],
+  buildGoal: 'Build LED circuit with 330 Ω resistor and compare against 1 kΩ behavior.',
+  steps: [
+    { id: 'led-intro', type: 'intro', title: 'Target current range', guidance: 'Aim for visible brightness without stressing LED.' },
+    { id: 'led-config', type: 'configure_component', title: 'Set resistor to 330 Ω', guidance: 'Adjust resistor property before running.' },
+    { id: 'led-run', type: 'run_simulation', title: 'Run and observe', guidance: 'Observe LED state and node voltage drop.' },
+    { id: 'led-probe', type: 'probe_node', title: 'Probe resistor and LED nodes', guidance: 'Use Instruments panel to read voltage split.' },
+    { id: 'led-break', type: 'break_circuit', title: 'Swap to 1 kΩ', guidance: 'Increase resistor and compare behavior.', expectedOutcome: 'Lower current and dimmer LED.' },
+    { id: 'led-complete', type: 'complete', title: 'Complete', guidance: 'Record why resistor value matters.' },
+  ],
+  observations: ['Higher resistance lowers current.', 'LED brightness tracks current.', 'Flow intensity should appear reduced with large R.'],
+  breakExperiments: [{ id: 'led-no-resistor', title: 'Remove resistor (briefly)', prompt: 'Bypass the resistor and inspect diagnostics.', expectedLearning: 'Diagnostics should warn about unsafe drive conditions.' }],
+  explanationPrompts: ['How does series resistance protect the diode?'],
+  commonMistakes: ['Placing resistor in parallel instead of series.', 'Assuming LED brightness is linear with current.', 'Reversing anode/cathode.'],
+  checkpoints: [
+    { id: 'cp-led-components', type: 'components_placed', label: 'Required components placed', description: 'Source, resistor, LED are placed.' },
+    { id: 'cp-led-probe', type: 'node_probed', label: 'Node probed', description: 'A lesson node has been measured.' },
+  ],
+  tutorPromptHints: ['What should I observe when going from 330Ω to 1kΩ?', 'Why is my LED still off?'],
+  tags: ['foundations', 'led', 'current-limiting'],
+  relatedComponents: ['resistor', 'led', 'battery-source'],
+  professionalToolRecommendations: ['Instruments', 'Flow view', 'Tutor'],
+};

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useBoardStore } from '@/features/board/boardStore';
+import { getActiveLessonContext } from '@/features/lessons/lessonContextAdapter';
 
 interface DiagnosticItem {
   id: string;
@@ -28,10 +29,12 @@ const diagnostics: DiagnosticItem[] = [
 export const DiagnosticsPanel = (): JSX.Element => {
   const [openId, setOpenId] = useState<string | null>('d2');
   const setSelectedHole = useBoardStore((state) => state.setSelectedHole);
+  const lessonContext = getActiveLessonContext();
 
   return (
     <section className="rail-panel">
       <h3 className="panel-title">Diagnostics</h3>
+      {lessonContext ? <p className="mb-2 text-[11px] text-token-secondary">Lesson-aware focus: {lessonContext.currentStepLabel}</p> : null}
       <ul className="space-y-2 text-xs">
         {diagnostics.map((item) => (
           <li key={item.id} className="rounded-lg border border-token-soft bg-token-elevated/70 p-2">

@@ -18,6 +18,7 @@ interface ComponentPlacementState {
   deleteComponent: (componentId: string) => void;
   moveComponentTerminal: (componentId: string, terminalId: string, holeId: string) => void;
   moveComponentToHoles: (componentId: string, holeIds: string[]) => void;
+  clearAll: () => void;
 }
 
 const nextHoleInRow = (holeId: string): string => {
@@ -134,4 +135,5 @@ export const useComponentPlacementStore = create<ComponentPlacementState>((set, 
           : component,
       ),
     })),
+  clearAll: () => set({ components: [], placingType: null }),
 }));
