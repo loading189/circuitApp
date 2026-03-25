@@ -521,3 +521,37 @@ Tool panel defaults now adapt by support profile (`toolPanelDefaults.ts`):
 - Independent emphasizes instruments/diagnostics/flow
 
 Users can still override panel selection manually.
+
+## LED guided golden-path polish standard (benchmark)
+
+The `lesson-led-current-limiter` Guided mode is now the benchmark for blueprint-driven step UX quality.
+
+### Golden-path UX rules
+
+- The first step is a **preflight inspect step** with a concise target path preview.
+- Every Guided build step should answer three questions immediately: what to place/connect, where exactly, and why it matters.
+- Exact placement and exact wire endpoints are treated as pass/fail for Guided progression.
+- Wrong actions use calm, corrective language and do not auto-advance.
+- Correct actions trigger a short professional acknowledgment, then a smooth step transition.
+
+### Timing and feedback pattern
+
+Use this pattern for blueprint-driven Guided lessons:
+
+1. show exact board target(s)
+2. wait for exact validation
+3. show subtle success acknowledgment
+4. advance after a short delay (`~400ms`) to avoid abrupt flicker
+5. optionally show one-sentence micro-teaching after completion
+
+### Restart/replay hygiene standard
+
+On restart/replay for Guided runs, reset all lesson-surface state together:
+
+- step index and overlay highlights
+- postcard mode/position and hints
+- micro-teaching moments
+- flow visualization state
+- lesson parts focus cues
+
+Future blueprint-driven Guided lessons should copy this LED lesson polish contract before adding extra lesson-specific behaviors.

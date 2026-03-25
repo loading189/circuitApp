@@ -19,7 +19,7 @@ describe('lesson registry', () => {
     if (!lesson) return;
 
     expect(lesson.steps.map((step) => step.id)).toEqual([
-      'led-intro',
+      'led-inspect-target',
       'led-place-resistor',
       'led-place-led',
       'led-wire-supply',
@@ -30,7 +30,7 @@ describe('lesson registry', () => {
       'led-compare',
       'led-complete',
     ]);
-    expect(lesson.breakExperiments).toHaveLength(3);
-    expect(lesson.tutorPromptHints).toContain('What changes if I reverse the LED?');
+    expect(lesson.breakExperiments).toHaveLength(1);
+    expect(lesson.tutorPromptHints).toContain('Why isn’t my LED turning on?');
   });
 });

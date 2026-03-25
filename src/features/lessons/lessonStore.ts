@@ -4,6 +4,7 @@ import { LESSON_SUPPORT_PROFILES } from './lessonSupportProfiles';
 import { useLessonRunStore } from './lessonRunStore';
 import { useToolPanelStore } from '@/features/ui/toolPanelStore';
 import { useFlowVisualizationStore } from '@/features/flow/flowVisualizationStore';
+import { useMicroTeachingStore } from './microTeachingStore';
 import type { LessonDefinition, LessonSupportLevel } from './lessonTypes';
 import type { LessonLibraryMode } from './lessonFilters';
 
@@ -62,6 +63,7 @@ export const useLessonStore = create<LessonState>((set, get) => ({
     useLessonRunStore.getState().launchLessonRun(resolvedId, supportLevel);
     useToolPanelStore.getState().applySupportDefaults(supportLevel);
     useFlowVisualizationStore.getState().reset();
+    useMicroTeachingStore.getState().dismissMoment();
     set({
       activeLessonId: resolvedId,
       activeStepIndex: 0,
@@ -116,6 +118,7 @@ export const useLessonStore = create<LessonState>((set, get) => ({
   setPostcardPosition: (postcardPosition) => set({ postcardPosition }),
   requestLessonReset: () => {
     useFlowVisualizationStore.getState().reset();
+    useMicroTeachingStore.getState().dismissMoment();
     set({ resetBoardRequestedAt: Date.now() });
   },
   restartLessonRun: (supportLevel) => {
@@ -123,6 +126,7 @@ export const useLessonStore = create<LessonState>((set, get) => ({
     useLessonRunStore.getState().restartRun(level);
     useToolPanelStore.getState().applySupportDefaults(level);
     useFlowVisualizationStore.getState().reset();
+    useMicroTeachingStore.getState().dismissMoment();
     set({
       activeSupportLevel: level,
       activeStepIndex: 0,

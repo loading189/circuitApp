@@ -17,7 +17,7 @@ const HoleTarget = ({ target, secondary = false }: { target: LessonOverlayTarget
   const y = hole.y * viewport.zoom + viewport.panY;
 
   return (
-    <g>
+    <g className="transition-opacity duration-200 ease-out">
       <circle cx={x} cy={y} r={secondary ? 11 : 15} fill={secondary ? 'rgba(34,211,238,0.06)' : 'rgba(34,211,238,0.12)'} className={secondary ? '' : 'animate-pulse'} />
       <circle cx={x} cy={y} r={secondary ? 7 : 10} fill="rgba(14,116,144,0.2)" stroke="#67e8f9" strokeWidth={secondary ? 1.5 : 2} />
       <circle cx={x} cy={y} r={secondary ? 4 : 5} fill="#67e8f9" opacity={secondary ? 0.45 : 0.7} />
@@ -45,7 +45,7 @@ const ZoneTarget = ({ target, secondary = false }: { target: LessonOverlayTarget
   const height = Math.abs(to.y - from.y) * viewport.zoom + 20;
 
   return (
-    <g>
+    <g className="transition-opacity duration-200 ease-out">
       <rect x={x} y={y} width={width} height={height} rx={10} fill={secondary ? 'rgba(45,212,191,0.04)' : 'rgba(45,212,191,0.08)'} stroke="#5eead4" strokeDasharray="6 4" />
       <rect x={x - 3} y={y - 3} width={width + 6} height={height + 6} rx={12} fill="none" stroke={secondary ? 'rgba(94,234,212,0.12)' : 'rgba(94,234,212,0.25)'} />
       {target.label ? <text x={x + 8} y={y - 8} fill="#ccfbf1" fontSize="11">{target.label}</text> : null}
@@ -68,9 +68,27 @@ export const GuidedOverlay = (): React.JSX.Element | null => {
   const [primaryTarget, secondaryTarget] = run.highlightedTargets;
   const panelTarget = run.highlightedTargets.find((target) => target.type === 'panel-control');
 
+  const geometry = getBoardGeometry();
+  const viewport = useBoardStore((state) => state.viewport);
+  const wireStart = run.highlightedTargets.find((target) => target.type === 'wire-start')?.holeId;
+  const wireEnd = run.highlightedTargets.find((target) => target.type === 'wire-end')?.holeId;
+  const startHole = wireStart ? geometry.holesById[wireStart] : null;
+  const endHole = wireEnd ? geometry.holesById[wireEnd] : null;
+
   return (
     <>
-      <svg className="pointer-events-none absolute inset-0 h-full w-full">
+      <svg className="pointer-events-none absolute inset-0 h-full w-full" key={`${run.lessonId}-${run.currentStepIndex}`}>
+        {startHole && endHole ? (
+          <line
+            x1={startHole.x * viewport.zoom + viewport.panX}
+            y1={startHole.y * viewport.zoom + viewport.panY}
+            x2={endHole.x * viewport.zoom + viewport.panX}
+            y2={endHole.y * viewport.zoom + viewport.panY}
+            stroke="rgba(103,232,249,0.35)"
+            strokeWidth={2}
+            strokeDasharray="4 5"
+          />
+        ) : null}
         {[primaryTarget, secondaryTarget].filter((target): target is LessonOverlayTarget => Boolean(target)).map((target, index) => {
           const secondary = index > 0;
           if (target.type === 'breadboard-zone') {
