@@ -11,6 +11,7 @@ interface ComponentPlacementState {
   rotateSelectedComponent: (componentId: string) => void;
   deleteComponent: (componentId: string) => void;
   moveComponentTerminal: (componentId: string, terminalId: string, holeId: string) => void;
+  moveComponentToHoles: (componentId: string, holeIds: string[]) => void;
 }
 
 const nextHoleInRow = (holeId: string): string => {
@@ -24,6 +25,66 @@ const nextHoleInRow = (holeId: string): string => {
   });
 
   return sibling?.id ?? holeId;
+};
+
+const findNearestHoleId = (x: number, y: number): string | null => {
+  let winner: { id: string; distance: number } | null = null;
+
+  for (const hole of breadboardModel.holes) {
+    const dx = hole.x - x;
+    const dy = hole.y - y;
+    const distance = Math.hypot(dx, dy);
+
+    if (!winner || distance < winner.distance) {
+      winner = { id: hole.id, distance };
+    }
+  }
+
+  if (!winner || winner.distance > 22) {
+    return null;
+  }
+
+  return winner.id;
+};
+
+const rotateTerminals = (component: PlacedComponent): PlacedComponent => {
+  if (!component.terminals.length) {
+    return component;
+  }
+
+  const anchor = breadboardModel.holesById[component.terminals[0].holeId];
+  if (!anchor) {
+    return { ...component, rotation: (((component.rotation + 90) % 360) as 0 | 90 | 180 | 270) };
+  }
+
+  const nextTerminals = component.terminals.map((terminal, index) => {
+    if (index === 0) {
+      return terminal;
+    }
+
+    const hole = breadboardModel.holesById[terminal.holeId];
+    if (!hole) {
+      return terminal;
+    }
+
+    const relativeX = hole.x - anchor.x;
+    const relativeY = hole.y - anchor.y;
+    const rotatedX = anchor.x - relativeY;
+    const rotatedY = anchor.y + relativeX;
+
+    const snappedHoleId = findNearestHoleId(rotatedX, rotatedY);
+    if (!snappedHoleId) {
+      return terminal;
+    }
+
+    return { ...terminal, holeId: snappedHoleId };
+  });
+
+  return {
+    ...component,
+    terminals: nextTerminals,
+    rotation: (((component.rotation + 90) % 360) as 0 | 90 | 180 | 270),
+  };
 };
 
 export const useComponentPlacementStore = create<ComponentPlacementState>((set, get) => ({
@@ -43,11 +104,7 @@ export const useComponentPlacementStore = create<ComponentPlacementState>((set, 
   },
   rotateSelectedComponent: (componentId) =>
     set((state) => ({
-      components: state.components.map((component) =>
-        component.id === componentId
-          ? { ...component, rotation: (((component.rotation + 90) % 360) as 0 | 90 | 180 | 270) }
-          : component,
-      ),
+      components: state.components.map((component) => (component.id === componentId ? rotateTerminals(component) : component)),
     })),
   deleteComponent: (componentId) =>
     set((state) => ({
@@ -65,6 +122,22 @@ export const useComponentPlacementStore = create<ComponentPlacementState>((set, 
           terminals: component.terminals.map((terminal) =>
             terminal.id === terminalId ? { ...terminal, holeId } : terminal,
           ),
+        };
+      }),
+    })),
+  moveComponentToHoles: (componentId, holeIds) =>
+    set((state) => ({
+      components: state.components.map((component) => {
+        if (component.id !== componentId) {
+          return component;
+        }
+
+        return {
+          ...component,
+          terminals: component.terminals.map((terminal, index) => ({
+            ...terminal,
+            holeId: holeIds[index] ?? terminal.holeId,
+          })),
         };
       }),
     })),

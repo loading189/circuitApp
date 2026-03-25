@@ -1,8 +1,23 @@
-import { useComponentPlacementStore } from '@/features/components/componentPlacement';
+import { ComponentPreview } from '@/components/inspector/ComponentPreview';
 import { useSelectionStore } from '@/features/board/selectionStore';
+import { useComponentPlacementStore } from '@/features/components/componentPlacement';
+
+const formatComponentValue = (component: ReturnType<typeof useComponentPlacementStore.getState>['components'][number]): string => {
+  switch (component.type) {
+    case 'resistor':
+      return `${component.props.resistanceOhms}Ω`;
+    case 'capacitor':
+      return `${component.props.capacitanceUf}μF`;
+    case 'dc-power-supply':
+      return `${component.props.voltage.toFixed(1)}V`;
+    default:
+      return component.name;
+  }
+};
 
 export const InspectorPanel = (): JSX.Element => {
   const selectedComponentId = useSelectionStore((state) => state.selectedComponentId);
+  const setSelectedComponentId = useSelectionStore((state) => state.setSelectedComponentId);
   const component = useComponentPlacementStore((state) =>
     state.components.find((candidate) => candidate.id === selectedComponentId),
   );
@@ -15,8 +30,12 @@ export const InspectorPanel = (): JSX.Element => {
       {!component ? (
         <p className="text-xs text-slate-400">Select a component to inspect properties.</p>
       ) : (
-        <div className="space-y-2 text-sm">
-          <p className="font-medium text-slate-100">{component.type}</p>
+        <div className="space-y-3 text-sm">
+          <div>
+            <p className="font-medium text-slate-100">{component.type}</p>
+            <p className="text-xs text-cyan-300">{formatComponentValue(component)}</p>
+          </div>
+          <ComponentPreview component={component} />
           <p className="text-xs text-slate-400">Terminals: {component.terminals.map((t) => t.holeId).join(' · ')}</p>
           <div className="flex gap-2">
             <button
@@ -28,7 +47,10 @@ export const InspectorPanel = (): JSX.Element => {
             </button>
             <button
               type="button"
-              onClick={() => del(component.id)}
+              onClick={() => {
+                del(component.id);
+                setSelectedComponentId(null);
+              }}
               className="rounded border border-rose-700 px-2 py-1 text-xs text-rose-300 hover:border-rose-400"
             >
               Delete
