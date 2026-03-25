@@ -16,7 +16,7 @@ export const voltageDividerLesson: LessonDefinition = {
   buildGoal: 'Build a valid divider, probe midpoint voltage, then change R1/R2 to see the ratio shift.',
   steps: [
     { id: 'div-place', type: 'place_component', title: 'Place two resistors in series', guidance: 'Ensure midpoint node is accessible for probing.' },
-    { id: 'div-wire', type: 'wire_connection', title: 'Connect to source rails', guidance: 'Top to +, bottom to ground.' },
+    { id: 'div-wire', type: 'wire_connection', title: 'Connect to source rails', guidance: 'Top to +, bottom to ground.', supportGuidance: { guided: 'Use highlighted targets: top resistor leg to + rail and bottom leg to ground rail.', coached: 'Connect series chain between supply and ground while keeping midpoint clear.', independent: 'Connect your divider to supply rails and verify reference nodes.' }, overlayTargets: [{ id: 'div-lib-resistor', type: 'component-library-item', componentType: 'resistor', label: 'Use resistor pair' }, { id: 'div-zone', type: 'breadboard-zone', zone: { fromHoleId: 'left-a-12', toHoleId: 'left-e-16' }, label: 'Divider zone' }, { id: 'div-mid-node', type: 'node', holeId: 'left-c-14', label: 'Probe midpoint' }] },
     { id: 'div-probe', type: 'probe_node', title: 'Probe midpoint', guidance: 'Measure divider output node.' },
     { id: 'div-observe', type: 'observe_behavior', title: 'Adjust ratio', guidance: 'Make R1 much larger, then R2 much larger, and compare midpoint voltage.' },
     { id: 'div-break', type: 'break_circuit', title: 'Break one leg', guidance: 'Remove upper or lower resistor connection to create a floating/invalid midpoint.' },

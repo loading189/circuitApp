@@ -6,6 +6,7 @@ import { componentRegistry } from '@/features/components/componentRegistry';
 import { filterComponentsForLesson, getLessonComponentStatus } from '@/features/lessons/lessonFilters';
 import { lessonRegistry } from '@/features/lessons/lessonRegistry';
 import { useLessonStore } from '@/features/lessons/lessonStore';
+import { useLessonRunStore } from '@/features/lessons/lessonRunStore';
 import { searchComponents } from '@/features/components/componentSearch';
 
 export const ComponentLibrary = (): React.JSX.Element => {
@@ -22,6 +23,7 @@ export const ComponentLibrary = (): React.JSX.Element => {
   const activeLessonId = useLessonStore((state) => state.activeLessonId);
   const libraryMode = useLessonStore((state) => state.libraryMode);
   const setLibraryMode = useLessonStore((state) => state.setLibraryMode);
+  const activeRun = useLessonRunStore((state) => state.activeRun);
 
   const activeLesson = lessonRegistry.getById(activeLessonId ?? '');
 
@@ -98,8 +100,9 @@ export const ComponentLibrary = (): React.JSX.Element => {
             const active = item.type === placingType;
             const lessonStatus = getLessonComponentStatus(item.type, activeLesson?.requiredComponents ?? [], activeLesson?.optionalComponents ?? []);
             const placedCount = components.filter((component) => component.type === item.type).length;
+            const highlightedAsNext = activeRun?.supportLevel === 'guided' && activeRun.highlightedTargets.some((target) => target.type === 'component-library-item' && target.componentType === item.type);
             return (
-              <button key={item.type} type="button" onClick={() => selectType(item.type)} className={`component-tile ${active ? 'component-tile-active' : ''}`}>
+              <button key={item.type} type="button" onClick={() => selectType(item.type)} className={`component-tile ${active ? 'component-tile-active' : ''} ${highlightedAsNext ? 'ring-2 ring-cyan-300/80 shadow-glow-subtle' : ''}`}>
                 <span className="icon-pill">{item.visual2D.icon}</span>
                 <span className="flex-1 text-left">
                   <span className="block text-xs font-medium">{item.displayName}</span>

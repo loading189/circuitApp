@@ -5,6 +5,7 @@ import { getActiveLessonContext } from '@/features/lessons/lessonContextAdapter'
 import { useSimulationStore } from '@/features/simulation/simulationStore';
 import { componentRegistry } from '@/features/components/componentRegistry';
 import { useWireStore } from '@/features/wiring/wirePlacement';
+import { buildTutorSupportInstruction } from '@/features/lessons/lessonTutorAdapter';
 import { useLabUiStore } from '@/features/ui/labUiStore';
 import type { TutorContextPayload, TutorMessage } from './tutorTypes';
 
@@ -41,7 +42,12 @@ export const buildTutorContextPayload = (userMessage: string, conversation: Tuto
     }),
     diagnostics: [
       'Deterministic diagnostics available in Diagnostics tab.',
-      ...(lessonContext ? [`Lesson context: ${lessonContext.progressLabel}. Common mistake: ${lessonContext.commonMistakes[0] ?? 'none'}.`] : []),
+      ...(lessonContext
+        ? [
+            `Lesson context: ${lessonContext.progressLabel}. Common mistake: ${lessonContext.commonMistakes[0] ?? 'none'}.`,
+            buildTutorSupportInstruction(lessonContext.supportLevel),
+          ]
+        : []),
     ],
     recentUserChanges: useComponentPlacementStore
       .getState()

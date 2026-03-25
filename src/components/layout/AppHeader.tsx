@@ -1,6 +1,7 @@
 import { ModeSwitcher } from './ModeSwitcher';
 import { useLabUiStore } from '@/features/ui/labUiStore';
 import { lessonRegistry } from '@/features/lessons/lessonRegistry';
+import { LESSON_SUPPORT_PROFILES } from '@/features/lessons/lessonSupportProfiles';
 import { useLessonStore } from '@/features/lessons/lessonStore';
 import { useSimulationStore } from '@/features/simulation/simulationStore';
 
@@ -11,7 +12,9 @@ const HeaderButton = ({ label, onClick }: { label: string; onClick: () => void }
 );
 
 export const AppHeader = (): React.JSX.Element => {
-  const lesson = lessonRegistry.getById(useLessonStore((state) => state.activeLessonId ?? ''))?.title ?? useLabUiStore((state) => state.activeLessonTitle);
+  const lessonStore = useLessonStore();
+  const lesson = lessonRegistry.getById(lessonStore.activeLessonId ?? '')?.title ?? useLabUiStore((state) => state.activeLessonTitle);
+  const supportLabel = LESSON_SUPPORT_PROFILES[lessonStore.activeSupportLevel].label;
   const { run, stop, step, reset, status } = useSimulationStore();
 
   return (
@@ -20,7 +23,7 @@ export const AppHeader = (): React.JSX.Element => {
         <div className="h-8 w-8 rounded-lg border border-cyan-400/50 bg-cyan-400/10 shadow-glow-subtle" />
         <div className="min-w-0">
           <h1 className="truncate text-sm font-semibold uppercase tracking-[0.14em] text-cyan-100">Virtual Electronics Lab</h1>
-          <p className="truncate text-xs text-token-secondary">{lesson}</p>
+          <p className="truncate text-xs text-token-secondary">{lesson} · {supportLabel}</p>
         </div>
       </div>
 

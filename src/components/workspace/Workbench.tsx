@@ -2,6 +2,7 @@ import { BreadboardSvg } from '@/components/breadboard/BreadboardSvg';
 import { WorkbenchToolbar } from '@/components/breadboard/WorkbenchToolbar';
 import { FlowOverlay } from '@/components/instruments/FlowOverlay';
 import { CircuitPostcard } from '@/components/learning/CircuitPostcard';
+import { GuidedOverlay } from '@/components/learning/GuidedOverlay';
 import { useSimulationStore } from '@/features/simulation/simulationStore';
 
 export const Workbench = (): React.JSX.Element => {
@@ -13,6 +14,7 @@ export const Workbench = (): React.JSX.Element => {
         <WorkbenchToolbar />
         <BreadboardSvg />
         <FlowOverlay />
+        <GuidedOverlay />
       </div>
       <CircuitPostcard />
     </main>
