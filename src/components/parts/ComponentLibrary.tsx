@@ -62,12 +62,12 @@ export const ComponentLibrary = (): React.JSX.Element => {
 
   return (
     <section className="mt-3 min-h-0 flex-1 overflow-hidden">
-      <h2 className="panel-title">Component Encyclopedia</h2>
+      <h2 className="panel-title">{activeLesson ? 'Full Component Library' : 'Component Encyclopedia'}</h2>
       {activeLesson ? (
         <div className="mb-2 flex items-center gap-1 text-[11px]">
-          <button type="button" className={`chip-btn ${libraryMode === 'full' ? 'chip-btn-active' : ''}`} onClick={() => setLibraryMode('full')}>Full</button>
-          <button type="button" className={`chip-btn ${libraryMode === 'lesson' ? 'chip-btn-active' : ''}`} onClick={() => setLibraryMode('lesson')}>Lesson</button>
-          <button type="button" className={`chip-btn ${libraryMode === 'required' ? 'chip-btn-active' : ''}`} onClick={() => setLibraryMode('required')}>Required</button>
+          <button type="button" className={`chip-btn ${libraryMode === 'required' ? 'chip-btn-active' : ''}`} onClick={() => setLibraryMode('required')}>Required only</button>
+          <button type="button" className={`chip-btn ${libraryMode === 'lesson' ? 'chip-btn-active' : ''}`} onClick={() => setLibraryMode('lesson')}>Lesson set</button>
+          <button type="button" className={`chip-btn opacity-70 ${libraryMode === 'full' ? 'chip-btn-active opacity-100' : ''}`} onClick={() => setLibraryMode('full')}>Full library</button>
         </div>
       ) : null}
       <input

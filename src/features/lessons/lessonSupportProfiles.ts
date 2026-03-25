@@ -23,7 +23,7 @@ export const LESSON_SUPPORT_PROFILES: Record<LessonSupportLevel, LessonSupportPr
     showExactPlacement: false,
     showExactWiring: false,
     showPostcardByDefault: false,
-    emphasizedPanels: ['instruments', 'diagnostics', 'explain', 'flow'],
+    emphasizedPanels: ['tutor', 'instruments', 'diagnostics', 'explain'],
   },
   guided: {
     label: 'Guided',
@@ -45,7 +45,7 @@ export const LESSON_SUPPORT_PROFILES: Record<LessonSupportLevel, LessonSupportPr
     showExactPlacement: false,
     showExactWiring: false,
     showPostcardByDefault: true,
-    emphasizedPanels: ['explain', 'diagnostics', 'instruments', 'tutor'],
+    emphasizedPanels: ['tutor', 'explain', 'diagnostics', 'instruments'],
   },
   independent: {
     label: 'Independent',
@@ -56,7 +56,7 @@ export const LESSON_SUPPORT_PROFILES: Record<LessonSupportLevel, LessonSupportPr
     showExactPlacement: false,
     showExactWiring: false,
     showPostcardByDefault: true,
-    emphasizedPanels: ['instruments', 'diagnostics', 'flow', 'explain'],
+    emphasizedPanels: ['tutor', 'instruments', 'diagnostics', 'flow'],
   },
 };
 

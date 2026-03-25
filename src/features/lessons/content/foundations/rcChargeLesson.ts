@@ -6,7 +6,7 @@ export const rcChargeLesson: LessonDefinition = {
   title: 'Verse 4 · Charging in Time',
   subtitle: 'See voltage rise over time, not instantly, in a resistor-capacitor path.',
   conceptTitle: 'RC Charging',
-  conceptSummary: 'A capacitor charges through a resistor with a curved voltage rise over time.',
+    track: 'foundations',
   difficulty: 'intermediate',
   estimatedMinutes: 17,
   requiredComponents: ['battery-source', 'resistor', 'capacitor'],

@@ -1,4 +1,4 @@
-import { lessonRegistry } from '@/features/lessons/lessonRegistry';
+import { LESSON_TRACK_LABELS, lessonRegistry } from '@/features/lessons/lessonRegistry';
 import { useLessonStore } from '@/features/lessons/lessonStore';
 
 export const LessonPicker = (): React.JSX.Element => {
@@ -14,8 +14,12 @@ export const LessonPicker = (): React.JSX.Element => {
         value={activeLessonId ?? ''}
         onChange={(event) => openLessonLaunch(event.target.value)}
       >
-        {lessonRegistry.all.map((lesson) => (
-          <option key={lesson.id} value={lesson.id}>{lesson.title}</option>
+        {Object.entries(lessonRegistry.byTrack).map(([track, lessons]) => (
+          <optgroup key={track} label={LESSON_TRACK_LABELS[track as keyof typeof LESSON_TRACK_LABELS]}>
+            {lessons.map((lesson) => (
+              <option key={lesson.id} value={lesson.id}>{lesson.title}</option>
+            ))}
+          </optgroup>
         ))}
       </select>
       <div className="mt-2 flex gap-1">

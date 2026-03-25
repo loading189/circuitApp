@@ -2,6 +2,18 @@ export type LessonDifficulty = 'beginner' | 'intermediate' | 'advanced';
 
 export type LessonSupportLevel = 'sandbox' | 'guided' | 'coached' | 'independent';
 
+export type LessonTrack =
+  | 'foundations'
+  | 'current-and-resistance'
+  | 'voltage-and-division'
+  | 'time-and-capacitance'
+  | 'diodes-and-polarity'
+  | 'transistors-and-switching'
+  | 'analog-building-blocks'
+  | 'digital-logic'
+  | 'measurement-and-debugging'
+  | 'power-and-regulation';
+
 export type LessonStepType =
   | 'intro'
   | 'place_component'
@@ -51,7 +63,14 @@ export interface LessonStep {
   id: string;
   type: LessonStepType;
   title: string;
+  actionTitle?: string;
   guidance: string;
+  successCondition?: string;
+  primaryHighlightTargetId?: string;
+  secondaryHintTargetId?: string;
+  teachingNote?: string;
+  afterStepTeachingNote?: string;
+  toolSuggestion?: string;
   expectedOutcome?: string;
   observationHint?: string;
   supportGuidance?: LessonStepGuidance;
@@ -87,6 +106,7 @@ export interface LessonDefinition {
   subtitle: string;
   conceptTitle: string;
   conceptSummary: string;
+  track: LessonTrack;
   difficulty: LessonDifficulty;
   estimatedMinutes: number;
   requiredComponents: string[];

@@ -6,7 +6,7 @@ export const voltageDividerLesson: LessonDefinition = {
   title: 'Verse 3 · Split Voltage',
   subtitle: 'Use two resistors in series to produce a controllable midpoint voltage.',
   conceptTitle: 'Voltage Divider',
-  conceptSummary: 'Series resistors divide source voltage in proportion to resistance.',
+    track: 'foundations',
   difficulty: 'beginner',
   estimatedMinutes: 16,
   requiredComponents: ['battery-source', 'resistor', 'resistor'],
