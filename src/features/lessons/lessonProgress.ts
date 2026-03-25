@@ -1,13 +1,17 @@
 import type { PlacedComponent } from '@/features/components/componentTypes';
 import type { SimulationStatus } from '@/features/simulation/simulationTypes';
-import type { LessonDefinition } from './lessonTypes';
+import type { Wire } from '@/features/wiring/wireTypes';
+import { isBlueprintTopologySatisfied } from './lessonBlueprintValidation';
+import type { LessonDefinition, LessonSupportLevel } from './lessonTypes';
 
 interface LessonProgressInput {
   lesson: LessonDefinition;
   components: PlacedComponent[];
+  wires: Wire[];
   hasProbeSelection: boolean;
   simulationStatus: SimulationStatus;
   currentStepIndex: number;
+  supportLevel?: LessonSupportLevel;
 }
 
 export interface LessonProgressSummary {
@@ -35,6 +39,9 @@ const hasVisitedStep = (lesson: LessonDefinition, currentStepIndex: number, step
 export const evaluateLessonProgress = (input: LessonProgressInput): LessonProgressSummary => {
   const completed = new Set<string>();
   const hasComponents = hasRequiredComponents(input.lesson.requiredComponents, input.components);
+  const exactTopologySatisfied = input.lesson.blueprint
+    ? isBlueprintTopologySatisfied(input.lesson.blueprint, input.components, input.wires)
+    : false;
 
   for (const checkpoint of input.lesson.checkpoints) {
     if (checkpoint.type === 'components_placed' && hasComponents) {
@@ -56,7 +63,11 @@ export const evaluateLessonProgress = (input: LessonProgressInput): LessonProgre
       completed.add(checkpoint.id);
     }
     if (checkpoint.type === 'topology_connected' && hasComponents && input.simulationStatus !== 'stopped') {
-      if (input.lesson.id === 'lesson-led-current-limiter') {
+      if (input.supportLevel === 'guided' && input.lesson.blueprint) {
+        if (exactTopologySatisfied) {
+          completed.add(checkpoint.id);
+        }
+      } else if (input.lesson.id === 'lesson-led-current-limiter') {
         if (hasVisitedStep(input.lesson, input.currentStepIndex, 'led-wire-return')) {
           completed.add(checkpoint.id);
         }

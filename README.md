@@ -459,6 +459,29 @@ Replay support includes:
 - restart as Guided / Coached / Independent
 - board reset behavior coordinated with run restart
 
+
+### Blueprint-driven guided lessons (new)
+
+Lessons can now define a canonical **circuit blueprint** separate from build sequence:
+
+- `src/features/lessons/lessonBlueprintTypes.ts` defines target components, endpoint-level connections, observation targets, and break targets.
+- `LessonDefinition.blueprint` is the answer-key circuit for a lesson.
+- Each step can include `blueprintTargets` (component ids / connection ids / observation ids / break ids) plus optional `inspectTargetCircuit` payload for orientation-first steps.
+
+Runtime adapters and validation:
+
+- `src/features/lessons/lessonBlueprintAdapters.ts` derives Guided overlay targets from step+blueprint references.
+- `src/features/lessons/lessonBlueprintValidation.ts` checks exact placement and exact wire connectivity against the blueprint.
+- `src/features/lessons/lessonProgress.ts` uses blueprint-backed topology validation in Guided mode while preserving looser progression in Coached/Independent.
+
+Authoring pattern for new lessons:
+
+1. Define `blueprint` as the canonical target circuit.
+2. Add an `inspect_target_circuit` first step with `inspectTargetCircuit.pathOrder` to orient learner intent.
+3. For each build step, reference exact `blueprintTargets` (component or connection ids).
+4. Use break/compare steps with explicit `breakTargets` and observation targets.
+5. Keep postcard copy minimal (step title + why + hint), relying on blueprint-driven activation for exact board guidance.
+
 ### Guided overlay system
 
 `GuidedOverlay.tsx` renders premium on-bench support cues from typed lesson targets (`lessonTypes.ts`):

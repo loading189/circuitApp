@@ -12,6 +12,7 @@ import { useLessonRunStore } from '@/features/lessons/lessonRunStore';
 import { useLessonStore } from '@/features/lessons/lessonStore';
 import { useMicroTeachingStore } from '@/features/lessons/microTeachingStore';
 import { useSimulationStore } from '@/features/simulation/simulationStore';
+import { useWireStore } from '@/features/wiring/wirePlacement';
 import { useTutorStore } from '@/features/tutor/tutorStore';
 import { useToolPanelStore } from '@/features/ui/toolPanelStore';
 
@@ -36,6 +37,7 @@ export const CircuitPostcard = (): React.JSX.Element | null => {
   const selectedHoleId = useBoardStore((state) => state.selectedHoleId);
   const components = useComponentPlacementStore((state) => state.components);
   const simulationStatus = useSimulationStore((state) => state.status);
+  const wires = useWireStore((state) => state.wires);
   const sendMessage = useTutorStore((state) => state.sendMessage);
   const run = useLessonRunStore((state) => state.activeRun);
   const setActivePanel = useToolPanelStore((state) => state.setActivePanel);
@@ -51,8 +53,10 @@ export const CircuitPostcard = (): React.JSX.Element | null => {
     lesson,
     components,
     hasProbeSelection: Boolean(selectedHoleId),
+    wires,
     simulationStatus,
     currentStepIndex: activeStepIndex,
+    supportLevel: activeSupportLevel,
   });
 
 

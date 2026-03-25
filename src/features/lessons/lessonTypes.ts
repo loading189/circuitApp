@@ -1,3 +1,5 @@
+import type { LessonCircuitBlueprint, LessonInspectTargetCircuitPayload, LessonStepBlueprintTarget } from './lessonBlueprintTypes';
+
 export type LessonDifficulty = 'beginner' | 'intermediate' | 'advanced';
 
 export type LessonSupportLevel = 'sandbox' | 'guided' | 'coached' | 'independent';
@@ -18,6 +20,11 @@ export type LessonStepType =
   | 'intro'
   | 'place_component'
   | 'wire_connection'
+  | 'inspect_target_circuit'
+  | 'place_wire'
+  | 'run_flow'
+  | 'probe_target'
+  | 'compare_state'
   | 'configure_component'
   | 'run_simulation'
   | 'probe_node'
@@ -60,6 +67,16 @@ export interface LessonStepGuidance {
 }
 
 export interface LessonStep {
+  actionType?:
+    | 'inspect_target_circuit'
+    | 'place_component'
+    | 'place_wire'
+    | 'configure_component'
+    | 'run_flow'
+    | 'probe_target'
+    | 'break_circuit'
+    | 'compare_state'
+    | 'complete';
   id: string;
   type: LessonStepType;
   title: string;
@@ -75,6 +92,8 @@ export interface LessonStep {
   observationHint?: string;
   supportGuidance?: LessonStepGuidance;
   overlayTargets?: LessonOverlayTarget[];
+  blueprintTargets?: LessonStepBlueprintTarget;
+  inspectTargetCircuit?: LessonInspectTargetCircuitPayload;
 }
 
 export interface LessonExperiment {
@@ -124,4 +143,5 @@ export interface LessonDefinition {
   tags: string[];
   relatedComponents: string[];
   professionalToolRecommendations: string[];
+  blueprint?: LessonCircuitBlueprint;
 }

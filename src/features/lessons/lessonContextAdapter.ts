@@ -1,6 +1,7 @@
 import { useBoardStore } from '@/features/board/boardStore';
 import { useComponentPlacementStore } from '@/features/components/componentPlacement';
 import { useSimulationStore } from '@/features/simulation/simulationStore';
+import { useWireStore } from '@/features/wiring/wirePlacement';
 import { lessonRegistry } from './lessonRegistry';
 import type { LessonSupportLevel } from './lessonTypes';
 import { resolveStepGuidance } from './lessonGuidanceEngine';
@@ -35,13 +36,16 @@ export const getActiveLessonContext = (): ActiveLessonContext | null => {
   const components = useComponentPlacementStore.getState().components;
   const selectedHoleId = useBoardStore.getState().selectedHoleId;
   const simulationStatus = useSimulationStore.getState().status;
+  const wires = useWireStore.getState().wires;
 
   const progress = evaluateLessonProgress({
     lesson,
     components,
     hasProbeSelection: Boolean(selectedHoleId),
+    wires,
     simulationStatus,
     currentStepIndex: stepIndex,
+    supportLevel: lessonState.activeSupportLevel,
   });
 
   return {
