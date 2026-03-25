@@ -40,5 +40,5 @@ export const resolveStepOverlayTargets = (
   }
 
   const profile = LESSON_SUPPORT_PROFILES[supportLevel];
-  return step.overlayTargets.filter((target) => !profile.showExactPlacement || !isExactTarget(target)).filter((target) => !isExactTarget(target));
+  return step.overlayTargets.filter((target) => !profile.showExactPlacement ? !isExactTarget(target) : true);
 };

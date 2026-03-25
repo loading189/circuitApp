@@ -18,8 +18,10 @@ const HoleTarget = ({ target }: { target: LessonOverlayTarget }): React.JSX.Elem
 
   return (
     <g>
-      <circle cx={x} cy={y} r={11} className="animate-pulse" fill="rgba(34,211,238,0.2)" stroke="#67e8f9" strokeWidth={2} />
-      {target.label ? <text x={x + 14} y={y - 12} fill="#a5f3fc" fontSize="11">{target.label}</text> : null}
+      <circle cx={x} cy={y} r={15} fill="rgba(34,211,238,0.12)" className="animate-pulse" />
+      <circle cx={x} cy={y} r={10} fill="rgba(14,116,144,0.2)" stroke="#67e8f9" strokeWidth={2} />
+      <circle cx={x} cy={y} r={5} fill="#67e8f9" opacity={0.7} />
+      {target.label ? <text x={x + 16} y={y - 10} fill="#cffafe" fontSize="11">{target.label}</text> : null}
     </g>
   );
 };
@@ -37,18 +39,25 @@ const ZoneTarget = ({ target }: { target: LessonOverlayTarget }): React.JSX.Elem
     return null;
   }
 
-  const x = Math.min(from.x, to.x) * viewport.zoom + viewport.panX - 8;
-  const y = Math.min(from.y, to.y) * viewport.zoom + viewport.panY - 8;
-  const width = Math.abs(to.x - from.x) * viewport.zoom + 16;
-  const height = Math.abs(to.y - from.y) * viewport.zoom + 16;
+  const x = Math.min(from.x, to.x) * viewport.zoom + viewport.panX - 10;
+  const y = Math.min(from.y, to.y) * viewport.zoom + viewport.panY - 10;
+  const width = Math.abs(to.x - from.x) * viewport.zoom + 20;
+  const height = Math.abs(to.y - from.y) * viewport.zoom + 20;
 
   return (
     <g>
-      <rect x={x} y={y} width={width} height={height} rx={8} fill="rgba(45,212,191,0.08)" stroke="#2dd4bf" strokeDasharray="6 4" />
-      {target.label ? <text x={x + 6} y={y - 6} fill="#99f6e4" fontSize="11">{target.label}</text> : null}
+      <rect x={x} y={y} width={width} height={height} rx={10} fill="rgba(45,212,191,0.08)" stroke="#5eead4" strokeDasharray="6 4" />
+      <rect x={x - 3} y={y - 3} width={width + 6} height={height + 6} rx={12} fill="none" stroke="rgba(94,234,212,0.25)" />
+      {target.label ? <text x={x + 8} y={y - 8} fill="#ccfbf1" fontSize="11">{target.label}</text> : null}
     </g>
   );
 };
+
+const PanelCallout = ({ label }: { label: string }): React.JSX.Element => (
+  <div className="pointer-events-none absolute right-5 top-16 rounded-lg border border-cyan-300/40 bg-slate-950/80 px-3 py-1 text-[11px] text-cyan-100 shadow-[0_0_20px_rgba(34,211,238,0.18)]">
+    {label}
+  </div>
+);
 
 export const GuidedOverlay = (): React.JSX.Element | null => {
   const run = useLessonRunStore((state) => state.activeRun);
@@ -56,17 +65,22 @@ export const GuidedOverlay = (): React.JSX.Element | null => {
     return null;
   }
 
+  const panelTarget = run.highlightedTargets.find((target) => target.type === 'panel-control');
+
   return (
-    <svg className="pointer-events-none absolute inset-0 h-full w-full">
-      {run.highlightedTargets.map((target) => {
-        if (target.type === 'breadboard-zone') {
-          return <ZoneTarget key={target.id} target={target} />;
-        }
-        if (target.type === 'breadboard-hole' || target.type === 'wire-start' || target.type === 'wire-end' || target.type === 'node') {
-          return <HoleTarget key={target.id} target={target} />;
-        }
-        return null;
-      })}
-    </svg>
+    <>
+      <svg className="pointer-events-none absolute inset-0 h-full w-full">
+        {run.highlightedTargets.map((target) => {
+          if (target.type === 'breadboard-zone') {
+            return <ZoneTarget key={target.id} target={target} />;
+          }
+          if (target.type === 'breadboard-hole' || target.type === 'wire-start' || target.type === 'wire-end' || target.type === 'node') {
+            return <HoleTarget key={target.id} target={target} />;
+          }
+          return null;
+        })}
+      </svg>
+      {panelTarget?.label ? <PanelCallout label={panelTarget.label} /> : null}
+    </>
   );
 };
