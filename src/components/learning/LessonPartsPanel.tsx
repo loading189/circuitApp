@@ -17,6 +17,7 @@ const statusChipClass: Record<'placed' | 'next' | 'required' | 'optional', strin
 export const LessonPartsPanel = (): React.JSX.Element | null => {
   const activeLessonId = useLessonStore((state) => state.activeLessonId);
   const activeSupportLevel = useLessonStore((state) => state.activeSupportLevel);
+  const activeStepIndex = useLessonStore((state) => state.activeStepIndex);
   const setLibraryMode = useLessonStore((state) => state.setLibraryMode);
   const setPlacingType = useComponentPlacementStore((state) => state.setPlacingType);
   const placingType = useComponentPlacementStore((state) => state.placingType);
@@ -51,6 +52,9 @@ export const LessonPartsPanel = (): React.JSX.Element | null => {
   if (!lesson) {
     return null;
   }
+
+  const activeStep = lesson.steps[activeStepIndex];
+  const componentPlacementPhase = activeStep?.id === 'led-place-resistor' || activeStep?.id === 'led-place-led';
 
   const renderTile = (type: 'required' | 'optional', componentType: ComponentType): React.JSX.Element | null => {
     const definition = componentRegistry.getByType(componentType);
@@ -91,7 +95,7 @@ export const LessonPartsPanel = (): React.JSX.Element | null => {
       <div className="mb-2 flex items-center justify-between gap-2">
         <div>
           <p className="panel-title">Lesson Parts</p>
-          <p className="text-[11px] text-token-secondary">Only the parts needed for this step-driven build.</p>
+          <p className="text-[11px] text-token-secondary">{componentPlacementPhase ? 'Select the highlighted part, then place it on highlighted holes.' : 'Parts are ready. Focus on highlighted wire endpoints and flow checks.'}</p>
         </div>
         <button type="button" className="chip-btn opacity-70" onClick={() => setLibraryMode('full')}>
           Show full library

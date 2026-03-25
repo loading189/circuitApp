@@ -4,8 +4,10 @@ import { CircuitPostcardExpanded } from './CircuitPostcardExpanded';
 import { MicroTeachingToast } from './MicroTeachingToast';
 import { useBoardStore } from '@/features/board/boardStore';
 import { useComponentPlacementStore } from '@/features/components/componentPlacement';
+import { useFlowVisualizationStore } from '@/features/flow/flowVisualizationStore';
 import { lessonRegistry } from '@/features/lessons/lessonRegistry';
 import { resolveStepGuidance } from '@/features/lessons/lessonGuidanceEngine';
+import { evaluateLedGuidedStep } from '@/features/lessons/ledGuidedStepEvaluator';
 import { evaluateLessonProgress } from '@/features/lessons/lessonProgress';
 import { LESSON_LAUNCH_LEVELS, LESSON_SUPPORT_PROFILES } from '@/features/lessons/lessonSupportProfiles';
 import { useLessonRunStore } from '@/features/lessons/lessonRunStore';
@@ -15,6 +17,8 @@ import { useSimulationStore } from '@/features/simulation/simulationStore';
 import { useWireStore } from '@/features/wiring/wirePlacement';
 import { useTutorStore } from '@/features/tutor/tutorStore';
 import { useToolPanelStore } from '@/features/ui/toolPanelStore';
+
+const AUTO_ADVANCE_DELAY_MS = 420;
 
 export const CircuitPostcard = (): React.JSX.Element | null => {
   const activeLessonId = useLessonStore((state) => state.activeLessonId);
@@ -33,16 +37,21 @@ export const CircuitPostcard = (): React.JSX.Element | null => {
   const requestLessonReset = useLessonStore((state) => state.requestLessonReset);
   const restartLessonRun = useLessonStore((state) => state.restartLessonRun);
   const showMoment = useMicroTeachingStore((state) => state.showMoment);
+  const dismissMoment = useMicroTeachingStore((state) => state.dismissMoment);
 
   const selectedHoleId = useBoardStore((state) => state.selectedHoleId);
   const components = useComponentPlacementStore((state) => state.components);
   const simulationStatus = useSimulationStore((state) => state.status);
+  const flowEnabled = useFlowVisualizationStore((state) => state.enabled);
   const wires = useWireStore((state) => state.wires);
   const sendMessage = useTutorStore((state) => state.sendMessage);
   const run = useLessonRunStore((state) => state.activeRun);
   const setActivePanel = useToolPanelStore((state) => state.setActivePanel);
 
   const dragRef = useRef<{ x: number; y: number } | null>(null);
+  const autoAdvanceTimerRef = useRef<number | null>(null);
+  const lastFeedbackStepRef = useRef<string | null>(null);
+  const completedStepRef = useRef<string | null>(null);
 
   const lesson = lessonRegistry.getById(activeLessonId ?? '');
   if (!lesson) {
@@ -59,7 +68,6 @@ export const CircuitPostcard = (): React.JSX.Element | null => {
     supportLevel: activeSupportLevel,
   });
 
-
   useEffect(() => {
     useLessonRunStore.getState().updateProgress(progress);
   }, [progress]);
@@ -70,6 +78,72 @@ export const CircuitPostcard = (): React.JSX.Element | null => {
   const step = lesson.steps[activeStepIndex];
   const stepGuidance = resolveStepGuidance(lesson, activeStepIndex, activeSupportLevel);
   const quickTutorPrompt = `${profile.label} help: ${lesson.tutorPromptHints[0] ?? `Explain this lesson: ${lesson.title}`}`;
+
+  useEffect(() => {
+    if (activeSupportLevel !== 'guided' || lesson.id !== 'lesson-led-current-limiter' || !step) {
+      return;
+    }
+
+    const evaluation = evaluateLedGuidedStep({
+      lesson,
+      step,
+      components,
+      wires,
+      simulationStatus,
+      flowEnabled,
+    });
+
+    if (evaluation.state === 'incorrect' && lastFeedbackStepRef.current !== `${step.id}:${evaluation.message}`) {
+      showMoment({
+        id: `${lesson.id}-${step.id}-feedback`,
+        text: evaluation.message,
+        stepId: step.id,
+        lessonId: lesson.id,
+        tone: 'correction',
+      });
+      lastFeedbackStepRef.current = `${step.id}:${evaluation.message}`;
+    }
+
+    if (evaluation.state === 'complete' && completedStepRef.current !== step.id) {
+      completedStepRef.current = step.id;
+      dismissMoment();
+      showMoment({
+        id: `${lesson.id}-${step.id}-complete`,
+        text: `✓ ${step.title} complete.`,
+        stepId: step.id,
+        lessonId: lesson.id,
+        tone: 'success',
+      });
+
+      if (autoAdvanceTimerRef.current) {
+        window.clearTimeout(autoAdvanceTimerRef.current);
+      }
+
+      autoAdvanceTimerRef.current = window.setTimeout(() => {
+        if (step.afterStepTeachingNote) {
+          showMoment({
+            id: `${lesson.id}-${step.id}-${activeStepIndex}`,
+            text: step.afterStepTeachingNote,
+            stepId: step.id,
+            lessonId: lesson.id,
+            tone: 'teaching',
+          });
+        }
+        nextStep();
+      }, AUTO_ADVANCE_DELAY_MS);
+    }
+
+    if (evaluation.state !== 'complete') {
+      completedStepRef.current = null;
+    }
+
+    return () => {
+      if (autoAdvanceTimerRef.current) {
+        window.clearTimeout(autoAdvanceTimerRef.current);
+        autoAdvanceTimerRef.current = null;
+      }
+    };
+  }, [activeStepIndex, activeSupportLevel, components, dismissMoment, flowEnabled, lesson, nextStep, showMoment, simulationStatus, step, wires]);
 
   if (activeSupportLevel === 'sandbox' && postcardState === 'minimized') {
     return null;
@@ -95,6 +169,7 @@ export const CircuitPostcard = (): React.JSX.Element | null => {
         text: step.afterStepTeachingNote,
         stepId: step.id,
         lessonId: lesson.id,
+        tone: 'teaching',
       });
     }
     nextStep();

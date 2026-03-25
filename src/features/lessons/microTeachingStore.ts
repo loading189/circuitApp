@@ -6,6 +6,7 @@ export interface MicroTeachingMoment {
   stepId: string;
   lessonId: string;
   createdAt: number;
+  tone?: "teaching" | "success" | "correction";
 }
 
 interface MicroTeachingState {
