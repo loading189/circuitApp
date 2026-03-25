@@ -2,6 +2,7 @@ import { useBoardStore } from '@/features/board/boardStore';
 import { useSelectionStore } from '@/features/board/selectionStore';
 import { useComponentPlacementStore } from '@/features/components/componentPlacement';
 import { useSimulationStore } from '@/features/simulation/simulationStore';
+import { componentRegistry } from '@/features/components/componentRegistry';
 import { useWireStore } from '@/features/wiring/wirePlacement';
 import { useLabUiStore } from '@/features/ui/labUiStore';
 import type { TutorContextPayload, TutorMessage } from './tutorTypes';
@@ -32,7 +33,10 @@ export const buildTutorContextPayload = (userMessage: string, conversation: Tuto
     wireSummary: `${wires.length} wires placed.`,
     simulationState: simulation.status,
     nodeVoltages: simulation.snapshot.nodeVoltages,
-    componentStateSummaries: components.map((component) => `${component.name}: ${component.type} at ${component.terminals.map((terminal) => terminal.holeId).join(', ')}`),
+    componentStateSummaries: components.map((component) => {
+      const definition = componentRegistry.getByType(component.type);
+      return `${component.name}: ${definition.displayName} (${definition.simulationSupport}) at ${component.terminals.map((terminal) => terminal.holeId).join(', ')}`;
+    }),
     diagnostics: ['Deterministic diagnostics available in Diagnostics tab.'],
     recentUserChanges: useComponentPlacementStore
       .getState()

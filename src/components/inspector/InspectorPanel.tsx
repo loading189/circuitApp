@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { ComponentPreview } from '@/components/inspector/ComponentPreview';
 import { useSelectionStore } from '@/features/board/selectionStore';
 import { useComponentPlacementStore } from '@/features/components/componentPlacement';
+import { componentRegistry } from '@/features/components/componentRegistry';
 import { formatResistance, parseResistanceInput, RESISTOR_PRESET_VALUES, resistorBandCode } from '@/features/components/resistorPresets';
 import { useWireStore } from '@/features/wiring/wirePlacement';
 import { WIRE_COLOR_HEX, type WireColor } from '@/features/wiring/wireTypes';
@@ -16,12 +17,13 @@ export const InspectorPanel = (): JSX.Element => {
   const rotate = useComponentPlacementStore((state) => state.rotateSelectedComponent);
   const delComponent = useComponentPlacementStore((state) => state.deleteComponent);
   const setResistorValue = useComponentPlacementStore((state) => state.setResistorValue);
+  const setComponentProperty = useComponentPlacementStore((state) => state.setComponentProperty);
 
   const wire = useWireStore((state) => state.wires.find((candidate) => candidate.id === selectedWireId));
   const delWire = useWireStore((state) => state.deleteWire);
   const updateWireColor = useWireStore((state) => state.updateWireColor);
 
-  const [resistorDraft, setResistorDraft] = useState('');
+  const definition = component ? componentRegistry.getByType(component.type) : null;
 
   const info = useMemo(() => {
     if (!component) {
@@ -29,15 +31,11 @@ export const InspectorPanel = (): JSX.Element => {
     }
 
     if (component.type === 'resistor') {
-      return formatResistance(component.props.resistanceOhms);
+      return formatResistance(Number(component.props.resistanceOhms ?? 0));
     }
-    if (component.type === 'capacitor') {
-      return `${component.props.capacitanceUf}μF`;
-    }
-    if (component.type === 'dc-power-supply') {
-      return `${component.props.voltage.toFixed(1)}V`;
-    }
-    return component.name;
+
+    const numericPrimary = Object.values(component.props).find((value) => typeof value === 'number');
+    return numericPrimary ? `${numericPrimary}` : component.name;
   }, [component]);
 
   return (
@@ -78,18 +76,65 @@ export const InspectorPanel = (): JSX.Element => {
         </div>
       ) : null}
 
-      {component ? (
+      {component && definition ? (
         <div className="space-y-3 text-sm">
           <div>
-            <p className="font-medium text-slate-100">{component.type}</p>
+            <p className="font-medium text-slate-100">{definition.displayName}</p>
             <p className="text-xs text-cyan-300">{info}</p>
+            <p className="text-[11px] uppercase tracking-[0.08em] text-slate-400">{definition.category} · {definition.simulationSupport}</p>
           </div>
           <ComponentPreview component={component} />
-          <p className="text-xs text-slate-400">Terminals: {component.terminals.map((t) => t.holeId).join(' · ')}</p>
+          <p className="text-xs text-slate-400">{definition.learning.plainExplanation}</p>
+          <p className="text-xs text-slate-400">Pins: {component.terminals.map((terminal) => `${terminal.label}:${terminal.holeId}`).join(' · ')}</p>
+
+          {definition.editableProperties.length ? (
+            <div className="space-y-2 rounded border border-slate-700 p-2">
+              <p className="text-xs text-slate-300">Editable properties</p>
+              {definition.editableProperties.map((property) => {
+                const value = component.props[property.key];
+                if (property.type === 'boolean') {
+                  return (
+                    <label key={property.key} className="flex items-center justify-between text-xs">
+                      {property.label}
+                      <input type="checkbox" checked={Boolean(value)} onChange={(event) => setComponentProperty(component.id, property.key, event.target.checked)} />
+                    </label>
+                  );
+                }
+
+                if (property.type === 'select' && property.options) {
+                  return (
+                    <label key={property.key} className="block text-xs">
+                      {property.label}
+                      <select className="mt-1 w-full rounded border border-slate-700 bg-slate-950 px-2 py-1" value={String(value ?? '')} onChange={(event) => setComponentProperty(component.id, property.key, event.target.value)}>
+                        {property.options.map((option) => (
+                          <option key={String(option.value)} value={String(option.value)}>{option.label}</option>
+                        ))}
+                      </select>
+                    </label>
+                  );
+                }
+
+                return (
+                  <label key={property.key} className="block text-xs">
+                    {property.label}
+                    <input
+                      className="mt-1 w-full rounded border border-slate-700 bg-slate-950 px-2 py-1"
+                      value={typeof value === 'number' || typeof value === 'string' ? value : ''}
+                      onChange={(event) => setComponentProperty(component.id, property.key, Number(event.target.value))}
+                      type="number"
+                      min={property.min}
+                      max={property.max}
+                      step={property.step}
+                    />
+                  </label>
+                );
+              })}
+            </div>
+          ) : null}
 
           {component.type === 'resistor' ? (
             <div className="space-y-2 rounded border border-slate-700 p-2">
-              <p className="text-xs text-slate-300">Bands: {resistorBandCode(component.props.resistanceOhms)}</p>
+              <p className="text-xs text-slate-300">Bands: {resistorBandCode(Number(component.props.resistanceOhms ?? 0))}</p>
               <div className="flex flex-wrap gap-1">
                 {RESISTOR_PRESET_VALUES.map((value) => (
                   <button
@@ -102,27 +147,9 @@ export const InspectorPanel = (): JSX.Element => {
                   </button>
                 ))}
               </div>
-              <div className="flex gap-1">
-                <input
-                  value={resistorDraft}
-                  onChange={(event) => setResistorDraft(event.target.value)}
-                  placeholder="Custom (e.g. 2.2k)"
-                  className="w-full rounded border border-slate-700 bg-slate-950 px-2 py-1 text-xs"
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    const parsed = parseResistanceInput(resistorDraft);
-                    if (parsed) {
-                      setResistorValue(component.id, parsed);
-                    }
-                  }}
-                  className="rounded border border-cyan-700 px-2 py-1 text-xs text-cyan-200"
-                >
-                  Apply
-                </button>
-              </div>
-              <p className="text-[11px] text-slate-400">Common uses: LED limiting (220Ω–1kΩ), pull-ups (4.7kΩ–10kΩ), dividers/timing.</p>
+              <button type="button" onClick={() => { const parsed = parseResistanceInput('2.2k'); if (parsed) { setResistorValue(component.id, parsed); } }} className="rounded border border-cyan-700 px-2 py-1 text-xs text-cyan-200">
+                Quick set 2.2kΩ
+              </button>
             </div>
           ) : null}
 

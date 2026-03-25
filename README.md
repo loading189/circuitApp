@@ -160,3 +160,68 @@ npm run build
 npm run test
 npm run lint
 ```
+
+## Component encyclopedia platform architecture
+
+The component system is now registry-driven so library browse, inspector editing, previews, tutor context, and explain metadata all share a single contract.
+
+### Core files
+
+- `src/features/components/componentTypes.ts`
+  - Defines the typed `ComponentDefinition` contract.
+  - Includes simulation support tiers (`full | partial | reference`), categories, placement metadata, learning metadata, and preview preferences.
+  - Hosts the expanded component definition list (existing + next-wave additions).
+- `src/features/components/componentRegistry.ts`
+  - Central lookup/filter APIs by type, category, and support tier.
+- `src/features/components/componentSearch.ts`
+  - Tokenized encyclopedia search over names, aliases, tags, uses, and tutor vocabulary.
+- `src/features/components/componentPreviewRegistry.ts`
+  - Family-aware preview resolution with guarded status outcomes:
+    - `mapped`
+    - `missing`
+    - `invalid`
+    - `unsupported`
+
+### Taxonomy and support tiers
+
+Categories include:
+
+- Power
+- Passive
+- Diodes & Light
+- Transistors
+- Integrated Circuits
+- Switches & Controls
+- Sensors
+- Output Devices
+- Timing & Analog
+- Digital Logic
+- Utility / Protection
+- Breadboard Helpers
+
+Support tiers:
+
+- **full**: place/edit/simulate/explain ready
+- **partial**: place/edit with simplified behavior support
+- **reference**: encyclopedia + preview/learning oriented placeholders
+
+### Preview mapping strategy
+
+Preview resolution is definition-driven. Every component has a preview family and preferred kind. The resolver safely falls back to 2D when a 3D model is unavailable or invalid and never throws UI-breaking errors.
+
+### Encyclopedia browser behavior
+
+The left library now supports:
+
+- search (name/alias/function/tags)
+- category filter
+- support-tier filter
+- beginner-friendly filter
+- detail panel showing learning metadata, pins, support tier, and quick add action
+
+### Adding new components consistently
+
+1. Add a new entry to `COMPONENT_DEFINITIONS` with full metadata.
+2. Include terminals, defaults, editable property schema, and learning copy.
+3. Assign a preview family and preferred kind.
+4. The component automatically participates in library search/filter, inspector metadata, explain/tutor context, and preview resolution.

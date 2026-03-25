@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { createComponent } from './componentFactory';
+import { componentRegistry } from './componentRegistry';
 import type { ComponentType, PlacedComponent } from './componentTypes';
 import { breadboardModel } from '../board/breadboardModel';
 import { DEFAULT_RESISTOR_OHMS } from './resistorPresets';
@@ -11,6 +12,7 @@ interface ComponentPlacementState {
   setPlacingType: (type: ComponentType | null) => void;
   setResistorPlacementOhms: (ohms: number) => void;
   setResistorValue: (componentId: string, ohms: number) => void;
+  setComponentProperty: (componentId: string, key: string, value: string | number | boolean) => void;
   placeComponentAt: (holeId: string) => void;
   rotateSelectedComponent: (componentId: string) => void;
   deleteComponent: (componentId: string) => void;
@@ -93,14 +95,23 @@ export const useComponentPlacementStore = create<ComponentPlacementState>((set, 
           : component,
       ),
     })),
+  setComponentProperty: (componentId, key, value) =>
+    set((state) => ({
+      components: state.components.map((component) =>
+        component.id === componentId
+          ? { ...component, props: { ...component.props, [key]: value } }
+          : component,
+      ),
+    })),
   placeComponentAt: (holeId) => {
     const { placingType, resistorPlacementOhms } = get();
     if (!placingType || !breadboardModel.holesById[holeId]) {
       return;
     }
 
-    const twoTerminal = placingType !== 'ground';
-    const component = createComponent(placingType, holeId, twoTerminal ? nextHoleInRow(holeId) : undefined);
+    const definition = componentRegistry.getByType(placingType);
+    const requiresSecondHole = definition.terminals.length > 1;
+    const component = createComponent(placingType, holeId, requiresSecondHole ? nextHoleInRow(holeId) : undefined);
     const resolved = component.type === 'resistor' ? { ...component, props: { ...component.props, resistanceOhms: resistorPlacementOhms } } : component;
     set((state) => ({ components: [...state.components, resolved] }));
   },

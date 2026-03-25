@@ -1,3 +1,4 @@
+import { componentRegistry } from './componentRegistry';
 import type { ComponentType, PlacedComponent } from './componentTypes';
 
 export interface ComponentPreviewDescriptor {
@@ -7,19 +8,30 @@ export interface ComponentPreviewDescriptor {
 }
 
 export interface ResolvedComponentPreview extends ComponentPreviewDescriptor {
-  status: 'mapped' | 'missing' | 'invalid';
+  status: 'mapped' | 'missing' | 'invalid' | 'unsupported';
   reason?: string;
 }
 
-const previewRegistry: Partial<Record<ComponentType, ComponentPreviewDescriptor>> = {
-  resistor: { kind: '3d', assetPath: '/assets/previews/resistor.glb', cameraPreset: 'isometric' },
-  capacitor: { kind: '3d', assetPath: '/assets/previews/capacitor.glb', cameraPreset: 'isometric' },
-  led: { kind: '3d', assetPath: '/assets/previews/led.glb', cameraPreset: 'isometric' },
-  'npn-transistor': { kind: '3d', assetPath: '/assets/previews/npn-transistor.glb', cameraPreset: 'front' },
-  'spst-switch': { kind: '2d' },
-  'dc-power-supply': { kind: '2d' },
-  ground: { kind: '2d' },
-  'jumper-wire': { kind: '2d' },
+const FAMILY_3D_ASSETS: Partial<Record<string, string>> = {
+  'axial-resistor': '/assets/previews/resistor.glb',
+  'led-5mm': '/assets/previews/led.glb',
+  'axial-diode': '/assets/previews/diode.glb',
+  'electrolytic-capacitor': '/assets/previews/capacitor.glb',
+  'ceramic-capacitor': '/assets/previews/ceramic-capacitor.glb',
+  'to92-transistor': '/assets/previews/npn-transistor.glb',
+  'to220-transistor': '/assets/previews/to220.glb',
+  'to220-regulator': '/assets/previews/to220-regulator.glb',
+  'dip-8': '/assets/previews/dip-8.glb',
+  'dip-14': '/assets/previews/dip-14.glb',
+  'dip-16': '/assets/previews/dip-16.glb',
+  pushbutton: '/assets/previews/pushbutton.glb',
+  potentiometer: '/assets/previews/potentiometer.glb',
+  relay: '/assets/previews/relay.glb',
+};
+
+const resolve3dAsset = (type: ComponentType): string | undefined => {
+  const definition = componentRegistry.getByType(type);
+  return definition.preview.asset3d ?? FAMILY_3D_ASSETS[definition.preview.family];
 };
 
 export const resolveComponentPreview = (component: PlacedComponent | null | undefined): ResolvedComponentPreview => {
@@ -27,19 +39,21 @@ export const resolveComponentPreview = (component: PlacedComponent | null | unde
     return { kind: '2d', status: 'missing', reason: 'No selected component was provided.' };
   }
 
-  const mappedPreview = previewRegistry[component.type];
+  const definition = componentRegistry.getByType(component.type);
 
-  if (!mappedPreview) {
-    return { kind: '2d', status: 'missing', reason: `No preview mapping registered for component type "${component.type}".` };
+  if (definition.preview.preferredKind === '2d') {
+    return { kind: '2d', status: 'mapped' };
   }
 
-  if (mappedPreview.kind === '3d') {
-    const normalizedPath = typeof mappedPreview.assetPath === 'string' ? mappedPreview.assetPath.trim() : '';
-    if (!normalizedPath) {
-      return { kind: '2d', status: 'invalid', reason: `Invalid or missing 3D asset path for "${component.type}".` };
-    }
-    return { ...mappedPreview, assetPath: normalizedPath, status: 'mapped' };
+  const assetPath = resolve3dAsset(component.type)?.trim();
+
+  if (assetPath === undefined) {
+    return { kind: '2d', status: 'unsupported', reason: `3D preview family not available for "${component.type}".` };
   }
 
-  return { ...mappedPreview, status: 'mapped' };
+  if (!assetPath) {
+    return { kind: '2d', status: 'invalid', reason: `Invalid or missing 3D asset path for "${component.type}".` };
+  }
+
+  return { kind: '3d', status: 'mapped', assetPath, cameraPreset: 'isometric' };
 };

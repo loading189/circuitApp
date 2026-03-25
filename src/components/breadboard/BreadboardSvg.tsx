@@ -3,12 +3,12 @@ import { getBoardGeometry, useBoardStore } from '@/features/board/boardStore';
 import { getStripForHole, getStripMembers } from '@/features/board/breadboardModel';
 import { useSelectionStore } from '@/features/board/selectionStore';
 import { useComponentPlacementStore } from '@/features/components/componentPlacement';
-import { useSimulationStore } from '@/features/simulation/simulationStore';
 import { routeWirePath } from '@/features/wiring/wireRouting';
 import { useWireStore } from '@/features/wiring/wirePlacement';
 import { WIRE_COLOR_HEX } from '@/features/wiring/wireTypes';
 import type { PlacedComponent } from '@/features/components/componentTypes';
 import { formatResistance } from '@/features/components/resistorPresets';
+import { componentRegistry } from '@/features/components/componentRegistry';
 
 const RESISTOR_BAND_COLORS = ['#7c2d12', '#111827', '#92400e'];
 
@@ -36,16 +36,21 @@ const findNearestHole = (x: number, y: number, threshold = 18) => {
 const componentLabel = (component: PlacedComponent): string => {
   switch (component.type) {
     case 'resistor':
-      return formatResistance(component.props.resistanceOhms);
+      return formatResistance(Number(component.props.resistanceOhms ?? 0));
     case 'capacitor':
-      return `${component.props.capacitanceUf}μF`;
+    case 'ceramic-capacitor':
+    case 'electrolytic-capacitor':
+      return `${Number(component.props.capacitanceUf ?? 0)}μF`;
     case 'dc-power-supply':
-      return `${component.props.voltage.toFixed(1)}V`;
+    case 'bench-power-supply':
+    case 'battery-source':
+      return `${Number(component.props.voltage ?? 0).toFixed(1)}V`;
     case 'led':
-      return `${component.props.color.toUpperCase()} LED`;
+      return `${String(component.props.color).toUpperCase()} LED`;
     case 'spst-switch':
       return component.props.isClosed ? 'Closed' : 'Open';
     case 'npn-transistor':
+    case 'pnp-transistor':
       return `β ${component.props.beta}`;
     default:
       return component.name;
@@ -84,8 +89,6 @@ export const BreadboardSvg = (): JSX.Element => {
   const completeWireTo = useWireStore((state) => state.completeWireTo);
   const previewWireTo = useWireStore((state) => state.previewWireTo);
   const cancelWire = useWireStore((state) => state.cancelWire);
-
-  const simState = useSimulationStore((state) => state.status);
 
   const [hoveredComponentId, setHoveredComponentId] = useState<string | null>(null);
   const [dragPreviewHoleIds, setDragPreviewHoleIds] = useState<string[] | null>(null);
@@ -389,6 +392,7 @@ export const BreadboardSvg = (): JSX.Element => {
               >
                 <line x1={first.x} y1={first.y} x2={last.x} y2={last.y} stroke="#cbd5e1" strokeWidth={2} strokeLinecap="round" opacity={0.8} />
 
+
                 {component.type === 'resistor' ? (
                   <g transform={`translate(${centerX} ${centerY}) rotate(${angle})`}>
                     <rect x={-28} y={-9} width={56} height={18} rx={8} fill="#fbbf24" stroke={selected ? '#7dd3fc' : hovered ? '#67e8f9' : '#0f172a'} strokeWidth={selected ? 2 : 1.4} />
@@ -396,50 +400,18 @@ export const BreadboardSvg = (): JSX.Element => {
                       <rect key={band} x={-14 + index * 10} y={-9} width={4} height={18} fill={band} rx={2} opacity={0.9} />
                     ))}
                   </g>
-                ) : null}
-
-                {component.type === 'led' ? (
-                  <g transform={`translate(${centerX} ${centerY}) rotate(${angle})`}>
-                    <circle cx={0} cy={0} r={10} fill="#fecaca" stroke={selected ? '#7dd3fc' : '#0f172a'} strokeWidth={selected ? 2 : 1.4} filter={simState === 'running' ? 'url(#ledGlow)' : undefined} />
-                    <line x1={6} y1={-9} x2={6} y2={9} stroke="#7f1d1d" strokeWidth={1.6} />
-                  </g>
-                ) : null}
-
-
-                {component.type === 'capacitor' ? (
-                  <g transform={`translate(${centerX} ${centerY}) rotate(${angle})`}>
-                    <rect x={-8} y={-13} width={16} height={26} rx={4} fill="#166534" stroke={selected ? '#7dd3fc' : '#0f172a'} strokeWidth={selected ? 2 : 1.4} />
-                    <line x1={2} y1={-10} x2={2} y2={10} stroke="#bbf7d0" strokeWidth={1.2} />
-                    <text x={-14} y={4} fontSize={10} fill="#bbf7d0">+</text>
-                  </g>
-                ) : null}
-
-                {component.type === 'spst-switch' ? (
-                  <g transform={`translate(${centerX} ${centerY}) rotate(${angle})`}>
-                    <rect x={-20} y={-8} width={40} height={16} rx={8} fill="#431407" stroke={selected ? '#7dd3fc' : '#0f172a'} strokeWidth={selected ? 2 : 1.4} />
-                    <line x1={-10} y1={component.props.isClosed ? 0 : 2} x2={10} y2={component.props.isClosed ? 0 : -6} stroke="#fdba74" strokeWidth={3} strokeLinecap="round" />
-                  </g>
-                ) : null}
-
-                {component.type === 'npn-transistor' ? (
-                  <g transform={`translate(${centerX} ${centerY}) rotate(${angle})`}>
-                    <circle cx={0} cy={0} r={12} fill="#312e81" stroke={selected ? '#7dd3fc' : '#0f172a'} strokeWidth={selected ? 2 : 1.4} />
-                    <text x={-11} y={21} fontSize={8} fill="#ddd6fe">B C E</text>
-                  </g>
-                ) : null}
-
-                {component.type === 'dc-power-supply' ? (
-                  <g transform={`translate(${centerX} ${centerY}) rotate(${angle})`}>
-                    <rect x={-18} y={-12} width={36} height={24} rx={8} fill="#082f49" stroke={selected ? '#7dd3fc' : '#0f172a'} strokeWidth={selected ? 2 : 1.4} />
-                  </g>
-                ) : null}
-
-                {component.type === 'ground' ? (
-                  <g transform={`translate(${centerX} ${centerY}) rotate(${angle})`}>
-                    <text x={-6} y={6} fontSize={18} fill="#cbd5e1">⏚</text>
-                  </g>
-                ) : null}
-
+                ) : (
+                  (() => {
+                    const definition = componentRegistry.getByType(component.type);
+                    return (
+                      <g transform={`translate(${centerX} ${centerY}) rotate(${angle})`}>
+                        <rect x={-20} y={-10} width={40} height={20} rx={6} fill={definition.visual2D.accentColor} opacity={0.26} stroke={selected ? '#7dd3fc' : hovered ? '#67e8f9' : '#0f172a'} strokeWidth={selected ? 2 : 1.4} />
+                        <text x={0} y={1} textAnchor="middle" dominantBaseline="middle" fontSize={9} fill="#e2e8f0">{definition.visual2D.icon}</text>
+                        {definition.visual2D.polarity === 'polarized' ? <text x={-16} y={-2} fontSize={8} fill="#bae6fd">+</text> : null}
+                      </g>
+                    );
+                  })()
+                )}
                 {(component.type === 'resistor' || selected || hovered) && showDenseLabels ? (
                   <g transform={`translate(${centerX} ${centerY - 20})`}>
                     <rect x={-32} y={-12} width={64} height={18} rx={6} fill="#0f172a" opacity={0.92} />
