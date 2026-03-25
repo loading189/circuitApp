@@ -27,11 +27,17 @@ const hasRequiredComponents = (required: string[], placed: PlacedComponent[]): b
   return [...requiredCounts.entries()].every(([type, count]) => (placedCounts.get(type) ?? 0) >= count);
 };
 
+const hasVisitedStep = (lesson: LessonDefinition, currentStepIndex: number, stepId: string): boolean => {
+  const index = lesson.steps.findIndex((step) => step.id === stepId);
+  return index >= 0 && currentStepIndex >= index;
+};
+
 export const evaluateLessonProgress = (input: LessonProgressInput): LessonProgressSummary => {
   const completed = new Set<string>();
+  const hasComponents = hasRequiredComponents(input.lesson.requiredComponents, input.components);
 
   for (const checkpoint of input.lesson.checkpoints) {
-    if (checkpoint.type === 'components_placed' && hasRequiredComponents(input.lesson.requiredComponents, input.components)) {
+    if (checkpoint.type === 'components_placed' && hasComponents) {
       completed.add(checkpoint.id);
     }
     if (checkpoint.type === 'simulation_run' && input.simulationStatus !== 'stopped') {
@@ -40,7 +46,7 @@ export const evaluateLessonProgress = (input: LessonProgressInput): LessonProgre
     if (checkpoint.type === 'node_probed' && input.hasProbeSelection) {
       completed.add(checkpoint.id);
     }
-    if (checkpoint.type === 'break_experiment' && input.currentStepIndex > 0 && input.lesson.steps[input.currentStepIndex]?.type !== 'break_circuit') {
+    if (checkpoint.type === 'break_experiment') {
       const breakStepIndex = input.lesson.steps.findIndex((step) => step.type === 'break_circuit');
       if (breakStepIndex >= 0 && input.currentStepIndex > breakStepIndex) {
         completed.add(checkpoint.id);
@@ -49,8 +55,14 @@ export const evaluateLessonProgress = (input: LessonProgressInput): LessonProgre
     if (checkpoint.type === 'explanation_acknowledged' && input.lesson.steps[input.currentStepIndex]?.type === 'complete') {
       completed.add(checkpoint.id);
     }
-    if (checkpoint.type === 'topology_connected' && hasRequiredComponents(input.lesson.requiredComponents, input.components) && input.simulationStatus !== 'stopped') {
-      completed.add(checkpoint.id);
+    if (checkpoint.type === 'topology_connected' && hasComponents && input.simulationStatus !== 'stopped') {
+      if (input.lesson.id === 'lesson-led-current-limiter') {
+        if (hasVisitedStep(input.lesson, input.currentStepIndex, 'led-wire-return')) {
+          completed.add(checkpoint.id);
+        }
+      } else {
+        completed.add(checkpoint.id);
+      }
     }
   }
 

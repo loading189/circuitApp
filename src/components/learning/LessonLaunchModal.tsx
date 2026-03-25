@@ -15,15 +15,29 @@ export const LessonLaunchModal = (): React.JSX.Element | null => {
 
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm">
-      <section className="w-[720px] rounded-2xl border border-cyan-400/30 bg-[#080f1f] p-5 shadow-[0_0_40px_rgba(0,255,255,0.15)]">
-        <div className="mb-4 flex items-start justify-between">
+      <section className="w-[760px] rounded-2xl border border-cyan-400/30 bg-[#080f1f] p-5 shadow-[0_0_40px_rgba(0,255,255,0.15)]">
+        <div className="mb-4 flex items-start justify-between gap-4">
           <div>
             <p className="text-[10px] uppercase tracking-[0.14em] text-cyan-300">Launch lesson</p>
             <h2 className="text-lg font-semibold text-slate-100">{lesson.title}</h2>
-            <p className="text-xs text-slate-400">{lesson.conceptSummary}</p>
-            <p className="mt-1 text-xs text-slate-500">{lesson.estimatedMinutes} min · parts: {lesson.requiredComponents.join(' · ')}</p>
+            <p className="text-xs text-slate-300">{lesson.subtitle}</p>
+            <p className="mt-1 text-xs text-slate-400">{lesson.conceptSummary}</p>
+            <p className="mt-2 text-xs text-slate-500">{lesson.estimatedMinutes} min • Step-by-step guided build available</p>
           </div>
           <button type="button" className="chip-btn" onClick={closeLessonLaunch}>Close</button>
+        </div>
+
+        <div className="mb-4 grid grid-cols-2 gap-3 text-xs">
+          <div className="rounded-xl border border-token-soft bg-token-elevated/70 p-3">
+            <p className="text-[10px] uppercase tracking-[0.12em] text-cyan-300">Required parts</p>
+            <p className="mt-1 text-token-secondary">{lesson.requiredComponents.join(' · ')}</p>
+          </div>
+          <div className="rounded-xl border border-token-soft bg-token-elevated/70 p-3">
+            <p className="text-[10px] uppercase tracking-[0.12em] text-cyan-300">You will learn</p>
+            <ul className="mt-1 list-disc space-y-0.5 pl-4 text-token-secondary">
+              {lesson.learningObjectives.slice(0, 2).map((objective) => <li key={objective}>{objective}</li>)}
+            </ul>
+          </div>
         </div>
 
         <div className="grid grid-cols-3 gap-3">

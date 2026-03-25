@@ -33,7 +33,10 @@ const explainComponent = (component: PlacedComponent, snapshot: SimulationSnapsh
 
 const lessonHintFor = (componentType: string, lessonId: string | null): string | null => {
   if (lessonId === 'lesson-led-current-limiter' && componentType === 'led') {
-    return 'In this lesson, LED direction and a complete resistor-limited loop decide whether it lights safely.';
+    return 'In this lesson, the LED lights only when it is forward-biased and the loop is closed through the series resistor.';
+  }
+  if (lessonId === 'lesson-led-current-limiter' && componentType === 'resistor') {
+    return 'This resistor is the current limiter; it must remain in series with the LED to keep current in a safe range.';
   }
   if (lessonId === 'lesson-voltage-divider' && componentType === 'resistor') {
     return 'In divider mode, each resistor helps set midpoint voltage ratio between supply and ground.';
@@ -61,7 +64,9 @@ export const explainSelection = ({ selectedComponent, selectedHoleId, snapshot }
         ? 'If this is between two resistors, its voltage depends on their ratio.'
         : lessonId === 'lesson-rc-charge'
           ? 'For RC charging, this node should move over time instead of staying static.'
-          : null;
+          : lessonId === 'lesson-led-current-limiter'
+            ? 'In LED current limiting, this node only participates in active flow when the loop and LED polarity are both correct.'
+            : null;
     return {
       title: `Node ${selectedHoleId}`,
       whatIsThis: 'A breadboard electrical node that can be shared by several terminals.',

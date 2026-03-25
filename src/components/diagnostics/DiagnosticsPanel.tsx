@@ -13,8 +13,30 @@ interface DiagnosticItem {
 const lessonDiagnostics = (lessonId: string | undefined): DiagnosticItem[] => {
   if (lessonId === 'lesson-led-current-limiter') {
     return [
-      { id: 'led-open', severity: 'warning', title: 'Open return path', detail: 'The LED branch needs a full loop back to ground before current can flow.' },
-      { id: 'led-polarity', severity: 'info', title: 'Check LED direction', detail: 'If LED is reversed, flow appears blocked even with correct wiring elsewhere.' },
+      {
+        id: 'led-loop',
+        severity: 'warning',
+        title: 'No closed path back to ground',
+        detail: 'The LED branch must return to source negative. If cathode return is open, current stops before the loop closes.',
+      },
+      {
+        id: 'led-polarity',
+        severity: 'warning',
+        title: 'LED orientation blocks forward current',
+        detail: 'If anode/cathode are reversed, the intended LED branch does not forward-bias in this lesson setup.',
+      },
+      {
+        id: 'led-series',
+        severity: 'info',
+        title: 'Resistor should stay in the active path',
+        detail: 'Keep resistor in series between source + and LED anode. Bypassing it removes current-limiting intent.',
+      },
+      {
+        id: 'led-breakit',
+        severity: 'info',
+        title: 'Use break-it as a comparison tool',
+        detail: 'Reverse LED, open return, then change resistor value. Compare flow, diagnostics wording, and observed behavior each time.',
+      },
     ];
   }
   if (lessonId === 'lesson-voltage-divider') {
@@ -36,7 +58,7 @@ const lessonDiagnostics = (lessonId: string | undefined): DiagnosticItem[] => {
 };
 
 export const DiagnosticsPanel = (): React.JSX.Element => {
-  const [openId, setOpenId] = useState<string | null>('d2');
+  const [openId, setOpenId] = useState<string | null>('led-loop');
   const setSelectedHole = useBoardStore((state) => state.setSelectedHole);
   const lessonContext = getActiveLessonContext();
   const diagnostics = lessonDiagnostics(lessonContext?.lessonId);

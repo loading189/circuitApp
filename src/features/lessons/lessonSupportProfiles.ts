@@ -28,8 +28,8 @@ export const LESSON_SUPPORT_PROFILES: Record<LessonSupportLevel, LessonSupportPr
   guided: {
     label: 'Guided',
     difficultyLabel: 'Easy',
-    description: 'Step-by-step support with exact placement and wiring highlights.',
-    launchHighlights: ['Exact placement help', 'Exact wiring endpoints', 'Direct next-step guidance'],
+    description: 'Premium step-by-step guidance with exact placement, exact wires, and clear success cues.',
+    launchHighlights: ['Exact placement targets on board', 'Exact wire start/end prompts', 'Calm next-action coaching'],
     tutorStyle: 'directive',
     showExactPlacement: true,
     showExactWiring: true,

@@ -261,24 +261,28 @@ The lab now ships a first-class lesson domain under `src/features/lessons/`.
 - `lessonProgress.ts` evaluates lightweight checkpoints from topology/interaction state.
 - `lessonContextAdapter.ts` exposes normalized context for Tutor, Explain, Diagnostics, and Instruments.
 
-### First three lesson polish focus (current sprint)
+### LED current limiting golden-path standard (benchmark lesson)
 
-This sprint concentrates polish on:
+The LED current limiting lesson (`lesson-led-current-limiter`) is now the benchmark guided experience.
 
-1. LED current limiting
-2. Voltage divider
-3. RC charging
+Golden-path design standard implemented:
 
-Pattern used for these lessons:
+- launch modal clearly sets expectations (time, parts, outcomes, support-level behavior)
+- guided steps are granular and explicit (place resistor, place LED, wire in sequence, run flow, break-it, compare)
+- guided overlay targets are precise for exact holes/wire endpoints in Guided mode
+- postcard emphasizes current step, success intent, observation prompts, and break-it prompts
+- diagnostics/explain/tutor wording aligns around one concept: closed loop + polarity + resistor-in-series
+- replay/restart resets board + flow + postcard placement/pin/step cleanly for repeated practice
 
-- clearer build goals and step sequencing
-- explicit required parts, observations, and break-it experiments
-- stronger checkpoint coverage (`components_placed`, `topology_connected`, `simulation_run`, `node_probed`, `break_experiment`)
-- lesson-specific tutor quick prompts
-- lesson-aware diagnostics copy and explain hints
-- flow overlay emphasis tuned for these foundational lessons
+How to apply this to future lessons:
 
-To polish future lessons, follow the same pattern in each `src/features/lessons/content/...` definition and keep UI surfaces content-driven (postcard, diagnostics, explain, tutor quick prompts).
+1. Make lesson content step-by-step and explicit in the lesson definition file.
+2. Add overlay targets only for the *next* user action (minimal simultaneous highlights).
+3. Keep postcard copy structured: current step, what to observe, common mistake, break-it experiment.
+4. Align diagnostics/explain/tutor language to reinforce the same concept from different angles.
+5. Ensure restart returns the learner to a clean, calm default with no stale highlight/flow state.
+
+This pattern keeps underlying logic complete while presenting a simple, confidence-building guided interface.
 
 ## Postcard behavior
 

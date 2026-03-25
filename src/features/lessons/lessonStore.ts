@@ -3,6 +3,7 @@ import { DEFAULT_LESSON_ID, lessonRegistry } from './lessonRegistry';
 import { LESSON_SUPPORT_PROFILES } from './lessonSupportProfiles';
 import { useLessonRunStore } from './lessonRunStore';
 import { useToolPanelStore } from '@/features/ui/toolPanelStore';
+import { useFlowVisualizationStore } from '@/features/flow/flowVisualizationStore';
 import type { LessonDefinition, LessonSupportLevel } from './lessonTypes';
 import type { LessonLibraryMode } from './lessonFilters';
 
@@ -35,6 +36,8 @@ interface LessonState {
   restartLessonRun: (supportLevel?: LessonSupportLevel) => void;
 }
 
+const DEFAULT_POSTCARD_POSITION = { x: 28, y: 24 };
+
 const normalizeStepIndex = (lesson: LessonDefinition | null, index: number): number => {
   if (!lesson) {
     return 0;
@@ -51,21 +54,25 @@ export const useLessonStore = create<LessonState>((set, get) => ({
   libraryMode: 'required',
   postcardPinned: false,
   postcardState: 'expanded',
-  postcardPosition: { x: 28, y: 24 },
+  postcardPosition: DEFAULT_POSTCARD_POSITION,
   resetBoardRequestedAt: null,
   activateLesson: (lessonId, supportLevel = get().activeSupportLevel) => {
     const resolvedId = lessonRegistry.getById(lessonId) ? lessonId : DEFAULT_LESSON_ID;
     const supportProfile = LESSON_SUPPORT_PROFILES[supportLevel];
     useLessonRunStore.getState().launchLessonRun(resolvedId, supportLevel);
     useToolPanelStore.getState().applySupportDefaults(supportLevel);
+    useFlowVisualizationStore.getState().reset();
     set({
       activeLessonId: resolvedId,
       activeStepIndex: 0,
       activeSupportLevel: supportLevel,
       postcardState: supportProfile.showPostcardByDefault ? 'expanded' : 'minimized',
       highlightedOnly: supportLevel === 'guided',
-      libraryMode: supportLevel === 'guided' ? 'required' : 'lesson',
+      libraryMode: supportLevel === 'independent' ? 'lesson' : 'required',
+      postcardPinned: false,
+      postcardPosition: DEFAULT_POSTCARD_POSITION,
       launchLessonSelectorOpen: false,
+      resetBoardRequestedAt: Date.now(),
     });
   },
   openLessonLaunch: (lessonId) => set({ launchLessonSelectorOpen: true, activeLessonId: lessonId }),
@@ -107,17 +114,23 @@ export const useLessonStore = create<LessonState>((set, get) => ({
   setPostcardPinned: (postcardPinned) => set({ postcardPinned }),
   setPostcardState: (postcardState) => set({ postcardState }),
   setPostcardPosition: (postcardPosition) => set({ postcardPosition }),
-  requestLessonReset: () => set({ resetBoardRequestedAt: Date.now() }),
+  requestLessonReset: () => {
+    useFlowVisualizationStore.getState().reset();
+    set({ resetBoardRequestedAt: Date.now() });
+  },
   restartLessonRun: (supportLevel) => {
     const level = supportLevel ?? get().activeSupportLevel;
     useLessonRunStore.getState().restartRun(level);
     useToolPanelStore.getState().applySupportDefaults(level);
+    useFlowVisualizationStore.getState().reset();
     set({
       activeSupportLevel: level,
       activeStepIndex: 0,
       postcardState: LESSON_SUPPORT_PROFILES[level].showPostcardByDefault ? 'expanded' : 'minimized',
       highlightedOnly: level === 'guided',
       libraryMode: level === 'independent' ? 'lesson' : 'required',
+      postcardPinned: false,
+      postcardPosition: DEFAULT_POSTCARD_POSITION,
       resetBoardRequestedAt: Date.now(),
     });
   },

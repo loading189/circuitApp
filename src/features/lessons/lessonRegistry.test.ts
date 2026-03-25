@@ -12,4 +12,25 @@ describe('lesson registry', () => {
     const lesson = lessonRegistry.getBySlug('voltage-divider');
     expect(lesson?.id).toBe('lesson-voltage-divider');
   });
+
+  it('keeps LED guided golden-path content intact', () => {
+    const lesson = lessonRegistry.getById('lesson-led-current-limiter');
+    expect(lesson).toBeTruthy();
+    if (!lesson) return;
+
+    expect(lesson.steps.map((step) => step.id)).toEqual([
+      'led-intro',
+      'led-place-resistor',
+      'led-place-led',
+      'led-wire-supply',
+      'led-wire-series-link',
+      'led-wire-return',
+      'led-run',
+      'led-break',
+      'led-compare',
+      'led-complete',
+    ]);
+    expect(lesson.breakExperiments).toHaveLength(3);
+    expect(lesson.tutorPromptHints).toContain('What changes if I reverse the LED?');
+  });
 });
