@@ -9,7 +9,7 @@ import { useLessonStore } from '@/features/lessons/lessonStore';
 import { useSimulationStore } from '@/features/simulation/simulationStore';
 import { useTutorStore } from '@/features/tutor/tutorStore';
 
-export const CircuitPostcard = (): JSX.Element | null => {
+export const CircuitPostcard = (): React.JSX.Element | null => {
   const activeLessonId = useLessonStore((state) => state.activeLessonId);
   const activeStepIndex = useLessonStore((state) => state.activeStepIndex);
   const postcardState = useLessonStore((state) => state.postcardState);
@@ -46,6 +46,7 @@ export const CircuitPostcard = (): JSX.Element | null => {
 
   const isMinimized = postcardState === 'minimized';
   const isExpanded = postcardState === 'expanded' || postcardState === 'completed';
+  const quickTutorPrompt = lesson.tutorPromptHints[0] ?? `Explain this lesson: ${lesson.title}`;
 
   if (isMinimized) {
     return (
@@ -94,7 +95,7 @@ export const CircuitPostcard = (): JSX.Element | null => {
       <div className="mt-3 flex flex-wrap gap-2">
         <button type="button" className="chip-btn" onClick={previousStep}>Prev step</button>
         <button type="button" className="chip-btn" onClick={nextStep}>Next step</button>
-        <button type="button" className="chip-btn" onClick={() => sendMessage(`Explain this lesson: ${lesson.title}`)}>Ask tutor</button>
+        <button type="button" className="chip-btn" onClick={() => sendMessage(quickTutorPrompt)}>Ask tutor</button>
         <button type="button" className="chip-btn" onClick={() => setLibraryMode('required')}>Show required parts only</button>
         <button type="button" className="chip-btn" onClick={toggleHighlightedOnly}>Highlight lesson components</button>
         <button type="button" className="chip-btn" onClick={requestLessonReset}>Reset lesson board</button>

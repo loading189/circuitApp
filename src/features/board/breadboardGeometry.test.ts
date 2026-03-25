@@ -14,6 +14,10 @@ describe('breadboard geometry', () => {
   it('keeps strip row groups connected by default net', () => {
     const geometry = createDefaultBreadboardGeometry();
     const leftRow = geometry.stripsByDefaultNet['left-strip-row-12'];
+    expect(leftRow).toBeDefined();
+    if (!leftRow) {
+      return;
+    }
 
     expect(leftRow).toContain('left-a-12');
     expect(leftRow).toContain('left-e-12');

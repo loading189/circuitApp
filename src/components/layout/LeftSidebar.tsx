@@ -1,7 +1,7 @@
 import { ComponentLibrary } from '@/components/parts/ComponentLibrary';
 import { LessonPicker } from '@/components/learning/LessonPicker';
 
-export const LeftSidebar = (): JSX.Element => {
+export const LeftSidebar = (): React.JSX.Element => {
   return (
     <aside className="panel-shell w-[300px] p-3">
       <section>

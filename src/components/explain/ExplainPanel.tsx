@@ -5,7 +5,7 @@ import { explainSelection } from '@/features/explanations/explainEngine';
 import { getActiveLessonContext } from '@/features/lessons/lessonContextAdapter';
 import { useSimulationStore } from '@/features/simulation/simulationStore';
 
-export const ExplainPanel = (): JSX.Element => {
+export const ExplainPanel = (): React.JSX.Element => {
   const selectedHoleId = useBoardStore((state) => state.selectedHoleId);
   const selectedComponentId = useSelectionStore((state) => state.selectedComponentId);
   const selectedComponent = useComponentPlacementStore((state) =>

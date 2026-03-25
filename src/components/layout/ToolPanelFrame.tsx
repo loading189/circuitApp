@@ -8,7 +8,7 @@ interface ToolPanelFrameProps extends PropsWithChildren {
   onTogglePin: () => void;
 }
 
-export const ToolPanelFrame = ({ title, minimized, pinned, onToggleMinimize, onTogglePin, children }: ToolPanelFrameProps): JSX.Element => (
+export const ToolPanelFrame = ({ title, minimized, pinned, onToggleMinimize, onTogglePin, children }: ToolPanelFrameProps): React.JSX.Element => (
   <section className="rail-panel">
     <div className="mb-2 flex items-center justify-between gap-2">
       <h3 className="panel-title mb-0">{title}</h3>

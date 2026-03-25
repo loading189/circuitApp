@@ -8,7 +8,7 @@ import { lessonRegistry } from '@/features/lessons/lessonRegistry';
 import { useLessonStore } from '@/features/lessons/lessonStore';
 import { searchComponents } from '@/features/components/componentSearch';
 
-export const ComponentLibrary = (): JSX.Element => {
+export const ComponentLibrary = (): React.JSX.Element => {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<'all' | (typeof COMPONENT_CATEGORIES)[number]>('all');
   const [supportTier, setSupportTier] = useState<'all' | SimulationSupportTier>('all');

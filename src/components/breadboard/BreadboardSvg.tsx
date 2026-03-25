@@ -57,7 +57,7 @@ const componentLabel = (component: PlacedComponent): string => {
   }
 };
 
-export const BreadboardSvg = (): JSX.Element => {
+export const BreadboardSvg = (): React.JSX.Element => {
   const geometry = getBoardGeometry();
   const viewport = useBoardStore((state) => state.viewport);
   const hoveredHoleId = useBoardStore((state) => state.hoveredHoleId);
@@ -154,6 +154,9 @@ export const BreadboardSvg = (): JSX.Element => {
         const host = event.currentTarget;
         const scene = boardToScene(event.clientX, event.clientY, host);
         const anchorId = dragState.originalHoles[0];
+        if (!anchorId) {
+          return;
+        }
         const anchorHole = geometry.holesById[anchorId];
         if (!anchorHole) {
           return;
@@ -173,6 +176,11 @@ export const BreadboardSvg = (): JSX.Element => {
         }
 
         const snappedHole = geometry.holesById[snappedAnchorId];
+        if (!snappedHole) {
+          setDragValid(false);
+          setDragPreviewHoleIds(null);
+          return;
+        }
         const dx = snappedHole.x - anchorHole.x;
         const dy = snappedHole.y - anchorHole.y;
         const previewHoles = dragState.originalHoles.map((holeId) => {
@@ -189,7 +197,7 @@ export const BreadboardSvg = (): JSX.Element => {
         const dragState = dragStateRef.current;
         if (dragState?.moved && dragPreviewHoleIds && dragValid) {
           moveComponentToHoles(dragState.componentId, dragPreviewHoleIds);
-          setSelectedHole(dragPreviewHoleIds[0]);
+          setSelectedHole(dragPreviewHoleIds[0] ?? null);
         }
 
         dragStateRef.current = null;

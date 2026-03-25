@@ -1,6 +1,6 @@
 import { useFlowVisualizationStore } from '@/features/flow/flowVisualizationStore';
 
-export const FlowSettingsPanel = (): JSX.Element => {
+export const FlowSettingsPanel = (): React.JSX.Element => {
   const enabled = useFlowVisualizationStore((state) => state.enabled);
   const showDirectionArrows = useFlowVisualizationStore((state) => state.showDirectionArrows);
   const emphasizeBrokenPaths = useFlowVisualizationStore((state) => state.emphasizeBrokenPaths);

@@ -1,6 +1,7 @@
 import { componentRegistry } from '@/features/components/componentRegistry';
 import type { PlacedComponent } from '@/features/components/componentTypes';
 import type { SimulationSnapshot } from '@/features/simulation/simulationTypes';
+import { useLessonStore } from '@/features/lessons/lessonStore';
 
 interface ExplainInput {
   selectedComponent: PlacedComponent | null;
@@ -30,19 +31,43 @@ const explainComponent = (component: PlacedComponent, snapshot: SimulationSnapsh
   };
 };
 
+const lessonHintFor = (componentType: string, lessonId: string | null): string | null => {
+  if (lessonId === 'lesson-led-current-limiter' && componentType === 'led') {
+    return 'In this lesson, LED direction and a complete resistor-limited loop decide whether it lights safely.';
+  }
+  if (lessonId === 'lesson-voltage-divider' && componentType === 'resistor') {
+    return 'In divider mode, each resistor helps set midpoint voltage ratio between supply and ground.';
+  }
+  if (lessonId === 'lesson-rc-charge' && (componentType === 'capacitor' || componentType === 'ceramic-capacitor' || componentType === 'electrolytic-capacitor')) {
+    return 'This capacitor creates time behavior: its node voltage rises gradually, not instantly.';
+  }
+  return null;
+};
+
 export const explainSelection = ({ selectedComponent, selectedHoleId, snapshot }: ExplainInput): ExplainResult => {
+  const lessonId = useLessonStore.getState().activeLessonId;
   if (selectedComponent) {
-    return explainComponent(selectedComponent, snapshot);
+    const base = explainComponent(selectedComponent, snapshot);
+    return {
+      ...base,
+      whyItMatters: lessonHintFor(selectedComponent.type, lessonId) ?? base.whyItMatters,
+    };
   }
 
   if (selectedHoleId) {
     const voltage = snapshot.nodeVoltages[selectedHoleId];
+    const lessonNodeHint =
+      lessonId === 'lesson-voltage-divider'
+        ? 'If this is between two resistors, its voltage depends on their ratio.'
+        : lessonId === 'lesson-rc-charge'
+          ? 'For RC charging, this node should move over time instead of staying static.'
+          : null;
     return {
       title: `Node ${selectedHoleId}`,
       whatIsThis: 'A breadboard electrical node that can be shared by several terminals.',
       whatDoingHere: 'It links nearby component pins into a net for current flow.',
       currentCondition: `Measured voltage: ${voltage !== undefined ? `${voltage.toFixed(2)} V` : 'not yet solved'}.`,
-      whyItMatters: 'Node voltage is the fastest way to verify expected circuit operation.',
+      whyItMatters: lessonNodeHint ?? 'Node voltage is the fastest way to verify expected circuit operation.',
     };
   }
 

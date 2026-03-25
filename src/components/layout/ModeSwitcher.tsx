@@ -1,7 +1,7 @@
 import { useLabUiStore } from '@/features/ui/labUiStore';
 import { cn } from '@/lib/utils/cn';
 
-export const ModeSwitcher = (): JSX.Element => {
+export const ModeSwitcher = (): React.JSX.Element => {
   const mode = useLabUiStore((state) => state.mode);
   const setMode = useLabUiStore((state) => state.setMode);
 

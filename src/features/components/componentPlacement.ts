@@ -53,7 +53,12 @@ const rotateTerminals = (component: PlacedComponent): PlacedComponent => {
     return component;
   }
 
-  const anchor = breadboardModel.holesById[component.terminals[0].holeId];
+  const anchorTerminal = component.terminals[0];
+  if (!anchorTerminal) {
+    return component;
+  }
+
+  const anchor = breadboardModel.holesById[anchorTerminal.holeId];
   if (!anchor) {
     return { ...component, rotation: (((component.rotation + 90) % 360) as 0 | 90 | 180 | 270) };
   }

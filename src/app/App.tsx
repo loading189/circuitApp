@@ -9,7 +9,7 @@ import { useLessonStore } from '@/features/lessons/lessonStore';
 import { useSimulationStore } from '@/features/simulation/simulationStore';
 import { useWireStore } from '@/features/wiring/wirePlacement';
 
-export const App = (): JSX.Element => {
+export const App = (): React.JSX.Element => {
   const selectedComponentId = useSelectionStore((state) => state.selectedComponentId);
   const selectedWireId = useSelectionStore((state) => state.selectedWireId);
   const setSelectedComponentId = useSelectionStore((state) => state.setSelectedComponentId);

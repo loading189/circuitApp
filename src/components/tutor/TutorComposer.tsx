@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export const TutorComposer = ({ onSend }: { onSend: (text: string) => Promise<void> }): JSX.Element => {
+export const TutorComposer = ({ onSend }: { onSend: (text: string) => Promise<void> }): React.JSX.Element => {
   const [value, setValue] = useState('');
 
   return (

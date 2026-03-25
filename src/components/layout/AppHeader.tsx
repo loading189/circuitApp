@@ -4,13 +4,13 @@ import { lessonRegistry } from '@/features/lessons/lessonRegistry';
 import { useLessonStore } from '@/features/lessons/lessonStore';
 import { useSimulationStore } from '@/features/simulation/simulationStore';
 
-const HeaderButton = ({ label, onClick }: { label: string; onClick: () => void }): JSX.Element => (
+const HeaderButton = ({ label, onClick }: { label: string; onClick: () => void }): React.JSX.Element => (
   <button type="button" className="control-btn" onClick={onClick}>
     {label}
   </button>
 );
 
-export const AppHeader = (): JSX.Element => {
+export const AppHeader = (): React.JSX.Element => {
   const lesson = lessonRegistry.getById(useLessonStore((state) => state.activeLessonId ?? ''))?.title ?? useLabUiStore((state) => state.activeLessonTitle);
   const { run, stop, step, reset, status } = useSimulationStore();
 

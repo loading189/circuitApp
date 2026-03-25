@@ -7,7 +7,7 @@ import { formatResistance, parseResistanceInput, RESISTOR_PRESET_VALUES, resisto
 import { useWireStore } from '@/features/wiring/wirePlacement';
 import { WIRE_COLOR_HEX, type WireColor } from '@/features/wiring/wireTypes';
 
-export const InspectorPanel = (): JSX.Element => {
+export const InspectorPanel = (): React.JSX.Element => {
   const selectedComponentId = useSelectionStore((state) => state.selectedComponentId);
   const selectedWireId = useSelectionStore((state) => state.selectedWireId);
   const setSelectedComponentId = useSelectionStore((state) => state.setSelectedComponentId);
