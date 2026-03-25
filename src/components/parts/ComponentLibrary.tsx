@@ -23,6 +23,12 @@ export const ComponentLibrary = (): JSX.Element => {
   }, [query]);
 
   const selectType = (type: ComponentType): void => {
+    if (type === 'jumper-wire') {
+      setToolMode('wire');
+      setPlacingType(null);
+      return;
+    }
+
     setToolMode('place-component');
     setPlacingType(type);
   };
