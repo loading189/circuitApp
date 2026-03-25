@@ -113,6 +113,10 @@ const ComponentPreviewContent = ({ component }: ComponentPreviewProps): JSX.Elem
     return <Component2DFallbackPreview component={component} subtitle="2D preview (no mapping)" />;
   }
 
+  if (preview.status === 'unsupported') {
+    return <Component2DFallbackPreview component={component} subtitle="2D preview (3D unsupported)" />;
+  }
+
   if (preview.kind !== '3d') {
     return <Component2DFallbackPreview component={component} subtitle="2D preview" />;
   }
