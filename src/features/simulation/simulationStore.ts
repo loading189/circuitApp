@@ -16,14 +16,25 @@ const createInitialSnapshot = (): SimulationSnapshot => ({
   supplyCurrentMa: 0,
 });
 
+const stepSnapshot = (snapshot: SimulationSnapshot): SimulationSnapshot => {
+  const nextTime = snapshot.timestampMs + 16;
+  const phase = Math.sin(nextTime / 220);
+  return {
+    timestampMs: nextTime,
+    nodeVoltages: {
+      ...snapshot.nodeVoltages,
+      'B-12': 1.6 + phase * 0.12,
+      'B-13': 3.2 + phase * 0.18,
+    },
+    supplyCurrentMa: 8.4 + phase * 0.9,
+  };
+};
+
 export const useSimulationStore = create<SimulationState>((set) => ({
   status: 'stopped',
   snapshot: createInitialSnapshot(),
   run: () => set({ status: 'running' }),
   stop: () => set({ status: 'paused' }),
-  step: () =>
-    set((state) => ({
-      snapshot: { ...state.snapshot, timestampMs: state.snapshot.timestampMs + 16 },
-    })),
+  step: () => set((state) => ({ snapshot: stepSnapshot(state.snapshot) })),
   reset: () => set({ status: 'stopped', snapshot: createInitialSnapshot() }),
 }));

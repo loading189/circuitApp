@@ -1,9 +1,10 @@
 import { useMemo, useRef } from 'react';
 import { getBoardGeometry, useBoardStore } from '@/features/board/boardStore';
-import { getStripMembers, getStripForHole } from '@/features/board/breadboardModel';
-import { useComponentPlacementStore } from '@/features/components/componentPlacement';
+import { getStripForHole, getStripMembers } from '@/features/board/breadboardModel';
 import { useSelectionStore } from '@/features/board/selectionStore';
+import { useComponentPlacementStore } from '@/features/components/componentPlacement';
 import { componentColor } from '@/features/components/componentRendering';
+import { useSimulationStore } from '@/features/simulation/simulationStore';
 
 export const BreadboardSvg = (): JSX.Element => {
   const geometry = getBoardGeometry();
@@ -23,6 +24,8 @@ export const BreadboardSvg = (): JSX.Element => {
   const setSelectedComponentId = useSelectionStore((state) => state.setSelectedComponentId);
   const selectedComponentId = useSelectionStore((state) => state.selectedComponentId);
 
+  const simState = useSimulationStore((state) => state.status);
+
   const dragStartRef = useRef<{ x: number; y: number } | null>(null);
 
   const highlightedMembers = useMemo(() => {
@@ -35,7 +38,7 @@ export const BreadboardSvg = (): JSX.Element => {
 
   return (
     <div
-      className="relative h-full w-full overflow-hidden rounded-xl border border-slate-700 bg-gradient-to-b from-[#f8fafc] to-[#dbe4ee]"
+      className="relative h-full w-full overflow-hidden rounded-2xl border border-token-soft bg-[#050912]"
       onWheel={(event) => {
         event.preventDefault();
         if (event.shiftKey) {
@@ -63,6 +66,15 @@ export const BreadboardSvg = (): JSX.Element => {
       }}
     >
       <svg viewBox={`0 0 ${geometry.width} ${geometry.height}`} className="h-full w-full">
+        <defs>
+          <filter id="ledGlow" x="-100%" y="-100%" width="300%" height="300%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
         <rect
           data-role="board-surface"
           x={0}
@@ -74,7 +86,7 @@ export const BreadboardSvg = (): JSX.Element => {
         />
 
         <g transform={`translate(${viewport.panX} ${viewport.panY}) scale(${viewport.zoom})`}>
-          <rect x={12} y={12} rx={20} width={geometry.width - 24} height={geometry.height - 24} fill="#f7fafc" stroke="#94a3b8" />
+          <rect x={12} y={12} rx={18} width={geometry.width - 24} height={geometry.height - 24} fill="#edf4fb" stroke="#7f92a8" strokeWidth={1.4} />
 
           {geometry.holes.map((hole) => {
             const isHoverGroup = highlightedMembers.has(hole.id);
@@ -85,8 +97,8 @@ export const BreadboardSvg = (): JSX.Element => {
                 cx={hole.x}
                 cy={hole.y}
                 r={geometry.holeRadius}
-                fill={isSelected ? '#06b6d4' : isHoverGroup ? '#38bdf8' : '#475569'}
-                opacity={isHoverGroup || isSelected ? 1 : 0.75}
+                fill={isSelected ? '#0ea5e9' : isHoverGroup ? '#38bdf8' : '#41566f'}
+                opacity={isHoverGroup || isSelected ? 1 : 0.8}
                 onPointerEnter={() => setHoveredHole(hole.id)}
                 onPointerLeave={() => setHoveredHole(null)}
                 onClick={() => {
@@ -113,6 +125,7 @@ export const BreadboardSvg = (): JSX.Element => {
             const y = (first.y + last.y) / 2;
             const x = (first.x + last.x) / 2;
             const selected = selectedComponentId === component.id;
+            const isLed = component.type === 'led';
 
             return (
               <g
@@ -121,6 +134,7 @@ export const BreadboardSvg = (): JSX.Element => {
                   setSelectedComponentId(component.id);
                   setSelectedHole(first.id);
                 }}
+                className="cursor-pointer"
               >
                 <line
                   x1={first.x}
@@ -130,6 +144,7 @@ export const BreadboardSvg = (): JSX.Element => {
                   stroke={componentColor(component)}
                   strokeWidth={selected ? 8 : 6}
                   strokeLinecap="round"
+                  opacity={component.type === 'jumper-wire' ? 0.9 : 0.82}
                 />
                 <rect
                   x={x - 16}
@@ -137,22 +152,23 @@ export const BreadboardSvg = (): JSX.Element => {
                   rx={6}
                   width={32}
                   height={20}
-                  fill={selected ? '#0f172a' : '#1e293b'}
+                  fill={selected ? '#0f172a' : '#1c2736'}
                   stroke={componentColor(component)}
                   strokeWidth={selected ? 2 : 1}
+                  filter={isLed && simState === 'running' ? 'url(#ledGlow)' : undefined}
                 />
-                <text x={x} y={y + 4} textAnchor="middle" fontSize="10" fill="#e2e8f0">
+                <text x={x} y={y + 4} textAnchor="middle" fontSize="10" fill="#dbeafe">
                   {component.name}
                 </text>
               </g>
             );
           })}
 
-          {hoveredHoleId && (
-            <text x={16} y={geometry.height - 18} fontSize="12" fill="#1e293b">
+          {hoveredHoleId ? (
+            <text x={16} y={geometry.height - 18} fontSize="12" fill="#0f172a">
               {hoveredHoleId} • strip {getStripForHole(hoveredHoleId)}
             </text>
-          )}
+          ) : null}
         </g>
       </svg>
     </div>

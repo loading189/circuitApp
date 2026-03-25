@@ -1,0 +1,43 @@
+import { useBoardStore } from '@/features/board/boardStore';
+import { useSelectionStore } from '@/features/board/selectionStore';
+import { useComponentPlacementStore } from '@/features/components/componentPlacement';
+import { useSimulationStore } from '@/features/simulation/simulationStore';
+import { useLabUiStore } from '@/features/ui/labUiStore';
+import type { TutorContextPayload, TutorMessage } from './tutorTypes';
+
+export const buildTutorContextPayload = (userMessage: string, conversation: TutorMessage[]): TutorContextPayload => {
+  const mode = useLabUiStore.getState().mode;
+  const activeLesson = useLabUiStore.getState().activeLessonTitle;
+  const components = useComponentPlacementStore.getState().components;
+  const selectedComponentId = useSelectionStore.getState().selectedComponentId;
+  const selectedHoleId = useBoardStore.getState().selectedHoleId;
+  const simulation = useSimulationStore.getState();
+
+  return {
+    mode,
+    activeLesson,
+    lessonObjectives: ['Complete closed loop', 'Apply resistor current limiting', 'Verify LED polarity'],
+    currentStep: 'Build path from + rail to GND through resistor and LED',
+    componentInventory: components.map((component) => ({
+      id: component.id,
+      type: component.type,
+      terminals: component.terminals.map((terminal) => terminal.holeId),
+    })),
+    selectedEntity: {
+      componentId: selectedComponentId ?? undefined,
+      nodeId: selectedHoleId ?? undefined,
+    },
+    wireSummary: 'Wire editor scaffold active; explicit wire list integration in progress.',
+    simulationState: simulation.status,
+    nodeVoltages: simulation.snapshot.nodeVoltages,
+    componentStateSummaries: components.map((component) => `${component.name}: ${component.type} at ${component.terminals.map((terminal) => terminal.holeId).join(', ')}`),
+    diagnostics: ['Deterministic diagnostics available in Diagnostics tab.'],
+    recentUserChanges: useComponentPlacementStore
+      .getState()
+      .components.slice(-3)
+      .map((component) => `Placed ${component.type} (${component.id.slice(0, 6)})`),
+    recentProbeActions: selectedHoleId ? [`Selected node ${selectedHoleId}`] : [],
+    userMessage,
+    conversation,
+  };
+};

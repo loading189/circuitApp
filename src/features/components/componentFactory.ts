@@ -84,9 +84,21 @@ export const createComponent = (type: ComponentType, holeA: string, holeB?: stri
         terminals: [
           { id: 'base', label: 'B', holeId: holeA },
           { id: 'collector', label: 'C', holeId: secondHole },
-          { id: 'emitter', label: 'E', holeId: secondHole },
+          { id: 'emitter', label: 'E', holeId: holeA },
         ],
         props: { beta: 100 },
+      };
+    case 'jumper-wire':
+      return {
+        id: uid(),
+        type,
+        name: 'JMP',
+        rotation: 0,
+        terminals: [
+          { id: 'terminalA', label: 'A', holeId: holeA },
+          { id: 'terminalB', label: 'B', holeId: secondHole },
+        ],
+        props: { color: 'cyan' },
       };
     default:
       throw new Error(`Unsupported component type: ${String(type)}`);

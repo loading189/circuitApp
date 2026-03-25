@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
+import { AppHeader } from '@/components/layout/AppHeader';
 import { LeftSidebar } from '@/components/layout/LeftSidebar';
 import { RightSidebar } from '@/components/layout/RightSidebar';
-import { TopControls } from '@/components/layout/TopControls';
 import { Workbench } from '@/components/workspace/Workbench';
 import { useSelectionStore } from '@/features/board/selectionStore';
 import { useComponentPlacementStore } from '@/features/components/componentPlacement';
@@ -24,9 +24,9 @@ export const App = (): JSX.Element => {
   }, [deleteComponent, selectedComponentId, setSelectedComponentId]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-bench-950 text-slate-100">
-      <TopControls />
-      <div className="flex h-[calc(100vh-74px)] min-h-0">
+    <div className="app-shell">
+      <AppHeader />
+      <div className="flex h-[calc(100vh-70px)] min-h-0 gap-3 p-3">
         <LeftSidebar />
         <Workbench />
         <RightSidebar />

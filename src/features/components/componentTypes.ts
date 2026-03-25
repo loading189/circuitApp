@@ -5,7 +5,8 @@ export type ComponentType =
   | 'led'
   | 'spst-switch'
   | 'capacitor'
-  | 'npn-transistor';
+  | 'npn-transistor'
+  | 'jumper-wire';
 
 export interface ComponentTerminal {
   id: string;
@@ -52,6 +53,10 @@ export interface NpnProps {
   beta: number;
 }
 
+export interface JumperWireProps {
+  color: 'cyan' | 'violet' | 'amber';
+}
+
 export type PlacedComponent =
   | BasePlacedComponent<'dc-power-supply', DCPowerSupplyProps>
   | BasePlacedComponent<'ground', GroundProps>
@@ -59,20 +64,26 @@ export type PlacedComponent =
   | BasePlacedComponent<'led', LedProps>
   | BasePlacedComponent<'spst-switch', SwitchProps>
   | BasePlacedComponent<'capacitor', CapacitorProps>
-  | BasePlacedComponent<'npn-transistor', NpnProps>;
+  | BasePlacedComponent<'npn-transistor', NpnProps>
+  | BasePlacedComponent<'jumper-wire', JumperWireProps>;
+
+export type ComponentCategory = 'Power' | 'Passive' | 'Semiconductors' | 'Switches' | 'Instruments';
 
 export interface ComponentPaletteItem {
   type: ComponentType;
   title: string;
   description: string;
+  category: ComponentCategory;
+  icon: string;
 }
 
 export const COMPONENT_PALETTE: ComponentPaletteItem[] = [
-  { type: 'dc-power-supply', title: 'DC Supply', description: 'Inject variable bench voltage.' },
-  { type: 'ground', title: 'Ground', description: 'Reference return node.' },
-  { type: 'resistor', title: 'Resistor', description: 'Current limiting / divider element.' },
-  { type: 'led', title: 'LED', description: 'Visual diode indicator.' },
-  { type: 'spst-switch', title: 'SPST Switch', description: 'Simple open/closed control.' },
-  { type: 'capacitor', title: 'Capacitor', description: 'Stores charge over time.' },
-  { type: 'npn-transistor', title: 'NPN', description: 'Educational transistor switch.' },
+  { type: 'dc-power-supply', title: 'DC Supply', description: 'Inject stable bench voltage.', category: 'Power', icon: '⎓' },
+  { type: 'ground', title: 'Ground', description: 'Reference return node.', category: 'Power', icon: '⏚' },
+  { type: 'resistor', title: 'Resistor', description: 'Current limiting / divider.', category: 'Passive', icon: 'Ω' },
+  { type: 'capacitor', title: 'Capacitor', description: 'Stores charge over time.', category: 'Passive', icon: '∥' },
+  { type: 'led', title: 'LED', description: 'Visual diode indicator.', category: 'Semiconductors', icon: '◉' },
+  { type: 'npn-transistor', title: 'NPN', description: 'Educational transistor switch.', category: 'Semiconductors', icon: '⇵' },
+  { type: 'spst-switch', title: 'SPST Switch', description: 'Simple open/closed control.', category: 'Switches', icon: '⏻' },
+  { type: 'jumper-wire', title: 'Jumper Wire', description: 'Direct low-ohm connection.', category: 'Instruments', icon: '∿' },
 ];
