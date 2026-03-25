@@ -2,10 +2,13 @@ import { useBoardStore } from '@/features/board/boardStore';
 import { useComponentPlacementStore } from '@/features/components/componentPlacement';
 import { useSimulationStore } from '@/features/simulation/simulationStore';
 import { lessonRegistry } from './lessonRegistry';
+import type { LessonSupportLevel } from './lessonTypes';
+import { resolveStepGuidance } from './lessonGuidanceEngine';
 import { evaluateLessonProgress } from './lessonProgress';
 import { useLessonStore } from './lessonStore';
 
 export interface ActiveLessonContext {
+  supportLevel: LessonSupportLevel;
   lessonId: string;
   lessonTitle: string;
   conceptTitle: string;
@@ -27,7 +30,8 @@ export const getActiveLessonContext = (): ActiveLessonContext | null => {
     return null;
   }
 
-  const stepIndex = useLessonStore.getState().activeStepIndex;
+  const lessonState = useLessonStore.getState();
+  const stepIndex = lessonState.activeStepIndex;
   const components = useComponentPlacementStore.getState().components;
   const selectedHoleId = useBoardStore.getState().selectedHoleId;
   const simulationStatus = useSimulationStore.getState().status;
@@ -42,9 +46,10 @@ export const getActiveLessonContext = (): ActiveLessonContext | null => {
 
   return {
     lessonId: lesson.id,
+    supportLevel: lessonState.activeSupportLevel,
     lessonTitle: lesson.title,
     conceptTitle: lesson.conceptTitle,
-    currentStepLabel: lesson.steps[stepIndex]?.title ?? 'No step selected',
+    currentStepLabel: `${lesson.steps[stepIndex]?.title ?? 'No step selected'} — ${resolveStepGuidance(lesson, stepIndex, lessonState.activeSupportLevel)}`,
     requiredComponents: lesson.requiredComponents,
     expectedObservations: lesson.observations,
     commonMistakes: lesson.commonMistakes,

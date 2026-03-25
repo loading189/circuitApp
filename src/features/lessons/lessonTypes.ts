@@ -1,5 +1,7 @@
 export type LessonDifficulty = 'beginner' | 'intermediate' | 'advanced';
 
+export type LessonSupportLevel = 'sandbox' | 'guided' | 'coached' | 'independent';
+
 export type LessonStepType =
   | 'intro'
   | 'place_component'
@@ -13,6 +15,38 @@ export type LessonStepType =
   | 'explain'
   | 'complete';
 
+export type LessonOverlayTargetType =
+  | 'component-library-item'
+  | 'breadboard-hole'
+  | 'breadboard-zone'
+  | 'wire-start'
+  | 'wire-end'
+  | 'node'
+  | 'component-on-board'
+  | 'panel-control'
+  | 'tool-button';
+
+export interface LessonOverlayTarget {
+  id: string;
+  type: LessonOverlayTargetType;
+  label?: string;
+  componentType?: string;
+  holeId?: string;
+  holeIds?: string[];
+  zone?: {
+    fromHoleId: string;
+    toHoleId: string;
+  };
+  panelControlId?: string;
+  toolButtonId?: string;
+}
+
+export interface LessonStepGuidance {
+  guided?: string;
+  coached?: string;
+  independent?: string;
+}
+
 export interface LessonStep {
   id: string;
   type: LessonStepType;
@@ -20,6 +54,8 @@ export interface LessonStep {
   guidance: string;
   expectedOutcome?: string;
   observationHint?: string;
+  supportGuidance?: LessonStepGuidance;
+  overlayTargets?: LessonOverlayTarget[];
 }
 
 export interface LessonExperiment {

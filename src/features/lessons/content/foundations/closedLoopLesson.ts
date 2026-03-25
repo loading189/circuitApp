@@ -17,7 +17,7 @@ export const closedLoopLesson: LessonDefinition = {
   steps: [
     { id: 'loop-intro', type: 'intro', title: 'Read the path', guidance: 'Plan one complete loop before placing parts.' },
     { id: 'loop-place', type: 'place_component', title: 'Place source, resistor, and LED', guidance: 'Place parts with room for clean wiring.' },
-    { id: 'loop-wire', type: 'wire_connection', title: 'Complete the return path', guidance: 'Connect from source through resistor and LED then back.' },
+    { id: 'loop-wire', type: 'wire_connection', title: 'Complete the return path', guidance: 'Connect from source through resistor and LED then back.', supportGuidance: { guided: 'Use the highlighted start/end holes to complete + → load → return.', coached: 'Ensure there is one continuous path from source through load back to source.', independent: 'Complete a valid loop and verify continuity with flow or diagnostics.' }, overlayTargets: [{ id: 'loop-wire-start', type: 'wire-start', holeId: 'rail-top-positive-4', label: 'Start at + rail' }, { id: 'loop-wire-end', type: 'wire-end', holeId: 'rail-top-negative-4', label: 'Return to - rail' }, { id: 'loop-lib-wire', type: 'component-library-item', componentType: 'jumper-wire', label: 'Use wire tool' }] },
     { id: 'loop-run', type: 'run_simulation', title: 'Run simulation', guidance: 'Start simulation to verify a live loop.', expectedOutcome: 'LED turns on when path is closed.' },
     { id: 'loop-observe', type: 'observe_behavior', title: 'Observe flow', guidance: 'Turn on Flow view and verify the active path is continuous.' },
     { id: 'loop-complete', type: 'complete', title: 'Complete', guidance: 'Checkpoint complete once loop behavior is stable.' },

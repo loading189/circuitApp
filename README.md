@@ -347,3 +347,80 @@ Panels can be selected and then minimized/pinned per tool (Inspector, Tutor, Exp
 3. Ensure `requiredComponents` match known component type IDs.
 4. Add clear steps, observations, common mistakes, and checkpoints.
 5. Optionally include focused tutor prompt hints and recommended professional tools.
+
+## Adaptive lesson runs (support-level sprint)
+
+Lessons now run through a **runtime session model** that is separate from static lesson content, so one lesson definition can support multiple scaffolding levels.
+
+### Support levels
+
+The lesson launch flow supports:
+
+- **Guided (Easy):** exact next step, exact placement/wiring overlays, directive postcard/tutor support.
+- **Coached (Medium):** objective-driven hints with region/topology cues and less direct answers.
+- **Independent (Hard):** minimal scaffolding, concept + goal + observations, learner-led diagnostics/instruments.
+- **Sandbox (Free Lab):** no active lesson scaffolding; open build environment.
+
+### Runtime session model
+
+`src/features/lessons/lessonRunStore.ts` + `lessonRunTypes.ts` maintain per-run state:
+
+- lesson id + support level
+- current step index
+- completed checkpoints
+- revealed hints
+- active highlighted overlay targets
+- run status + start timestamp
+- progress summary + retry count
+
+This keeps runtime progress/scaffolding out of static lesson files.
+
+### Lesson launch and replay flow
+
+`LessonLaunchModal.tsx` lets learners choose support level before starting a lesson, with clear per-level descriptions.
+
+Replay support includes:
+
+- restart current lesson run
+- restart as Guided / Coached / Independent
+- board reset behavior coordinated with run restart
+
+### Guided overlay system
+
+`GuidedOverlay.tsx` renders premium on-bench support cues from typed lesson targets (`lessonTypes.ts`):
+
+- breadboard hole highlights
+- zone highlights
+- wire start/end cues
+- probe/node cues
+- component-library next-component cues
+
+Overlay behavior is support-aware via `lessonGuidanceEngine.ts`:
+
+- Guided: full exact targets
+- Coached: reduced exactness (focus on zone/node level cues)
+- Independent/Sandbox: no intrusive exact placement overlays
+
+### Support-aware postcard and tutor
+
+- Postcard copy and interaction now adapts to selected support level (directive vs coaching vs challenge framing).
+- Tutor context includes support-level instruction through `lessonTutorAdapter.ts` + lesson context adapter, enabling directive/coaching/Socratic behavior without hardcoding tone in random UI components.
+
+### Authoring adaptive lessons
+
+Lesson steps can now include:
+
+- `supportGuidance` (`guided | coached | independent` copy variants)
+- typed `overlayTargets` per step
+
+This allows one lesson to remain maintainable while adapting scaffolding by support level.
+
+### Tool panel emphasis defaults
+
+Tool panel defaults now adapt by support profile (`toolPanelDefaults.ts`):
+
+- Guided emphasizes tutor/diagnostics flow
+- Coached emphasizes explain/diagnostics/instruments
+- Independent emphasizes instruments/diagnostics/flow
+
+Users can still override panel selection manually.
