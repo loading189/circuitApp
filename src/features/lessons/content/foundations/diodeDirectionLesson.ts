@@ -6,7 +6,7 @@ export const diodeDirectionLesson: LessonDefinition = {
   title: 'Verse 5 · One-Way Gate',
   subtitle: 'Diode orientation controls whether current path is allowed.',
   conceptTitle: 'Diode Direction and Forward Bias',
-  conceptSummary: 'Diodes conduct primarily from anode to cathode when forward-biased.',
+    track: 'foundations',
   difficulty: 'intermediate',
   estimatedMinutes: 14,
   requiredComponents: ['battery-source', 'resistor', 'generic-diode'],

@@ -18,35 +18,29 @@ export const CircuitPostcardExpanded = ({ lesson, stepIndex, progress, expanded,
 
   return (
     <div className="mt-3 space-y-3 text-xs">
-      <div className="rounded-lg border border-cyan-400/30 bg-cyan-500/10 p-2">
-        <p className="text-[10px] uppercase tracking-[0.1em] text-cyan-200">Current step · {stepOrdinal}</p>
-        <p className="mt-1 text-sm font-semibold text-token-primary">{step?.title ?? 'Lesson complete'}</p>
-        <p className="mt-1 text-token-secondary">{guidance}</p>
-      </div>
-
-      <p><span className="text-token-secondary">Build goal:</span> {lesson.buildGoal}</p>
-      <p><span className="text-token-secondary">Required parts:</span> {lesson.requiredComponents.join(' · ')}</p>
-
-      <div className="rounded-lg border border-emerald-400/25 bg-emerald-500/10 p-2">
-        <p className="text-[10px] uppercase tracking-[0.1em] text-emerald-200">What to observe</p>
-        <p className="mt-1 text-token-secondary">{observe}</p>
-      </div>
-
-      {supportLevel !== 'independent' ? (
-        <p><span className="text-token-secondary">Common mistake to avoid:</span> {lesson.commonMistakes[stepIndex % lesson.commonMistakes.length] ?? lesson.commonMistakes[0]}</p>
-      ) : null}
-
-      {supportLevel === 'guided' ? (
-        <div className="rounded-lg border border-amber-400/30 bg-amber-500/10 p-2">
-          <p className="text-[10px] uppercase tracking-[0.1em] text-amber-100">Break-it experiment</p>
-          <p className="mt-1 text-token-secondary">{activeBreak?.prompt ?? 'Try one controlled miswire.'}</p>
-        </div>
-      ) : null}
-
-      <p><span className="text-token-secondary">Checkpoints:</span> {progress.completedCount}/{progress.totalCount}</p>
-
       {expanded ? (
         <>
+          <div className="rounded-lg border border-cyan-400/30 bg-cyan-500/10 p-2">
+            <p className="text-[10px] uppercase tracking-[0.1em] text-cyan-200">Current step · {stepOrdinal}</p>
+            <p className="mt-1 text-sm font-semibold text-token-primary">{step?.title ?? 'Lesson complete'}</p>
+            <p className="mt-1 text-token-secondary">{guidance}</p>
+          </div>
+          <p><span className="text-token-secondary">Build goal:</span> {lesson.buildGoal}</p>
+          <p><span className="text-token-secondary">Required parts:</span> {lesson.requiredComponents.join(' · ')}</p>
+          <div className="rounded-lg border border-emerald-400/25 bg-emerald-500/10 p-2">
+            <p className="text-[10px] uppercase tracking-[0.1em] text-emerald-200">What to observe</p>
+            <p className="mt-1 text-token-secondary">{observe}</p>
+          </div>
+          {supportLevel !== 'independent' ? (
+            <p><span className="text-token-secondary">Common mistake to avoid:</span> {lesson.commonMistakes[stepIndex % lesson.commonMistakes.length] ?? lesson.commonMistakes[0]}</p>
+          ) : null}
+          {supportLevel === 'guided' ? (
+            <div className="rounded-lg border border-amber-400/30 bg-amber-500/10 p-2">
+              <p className="text-[10px] uppercase tracking-[0.1em] text-amber-100">Break-it experiment</p>
+              <p className="mt-1 text-token-secondary">{activeBreak?.prompt ?? 'Try one controlled miswire.'}</p>
+            </div>
+          ) : null}
+          <p><span className="text-token-secondary">Checkpoints:</span> {progress.completedCount}/{progress.totalCount}</p>
           <div>
             <p className="text-token-secondary">Objectives</p>
             <ul className="list-disc pl-4">
@@ -60,7 +54,11 @@ export const CircuitPostcardExpanded = ({ lesson, stepIndex, progress, expanded,
             </ul>
           </div>
         </>
-      ) : null}
+      ) : (
+        <div className="rounded-lg border border-token-soft bg-token-elevated/60 p-2 text-[11px] text-token-secondary">
+          Expanded details are hidden. Focus on the current step and board highlights.
+        </div>
+      )}
     </div>
   );
 };

@@ -6,7 +6,7 @@ export const closedLoopLesson: LessonDefinition = {
   title: 'Verse 1 · Close the Loop',
   subtitle: 'Every working circuit needs a full return path.',
   conceptTitle: 'Closed Circuit Fundamentals',
-  conceptSummary: 'Current needs a complete path from source to load and back to source.',
+    track: 'foundations',
   difficulty: 'beginner',
   estimatedMinutes: 10,
   requiredComponents: ['battery-source', 'resistor', 'led'],

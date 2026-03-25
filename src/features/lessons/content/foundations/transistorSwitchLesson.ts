@@ -6,7 +6,7 @@ export const transistorSwitchLesson: LessonDefinition = {
   title: 'Verse 6 · Small Signal, Bigger Control',
   subtitle: 'Use transistor base control to switch collector current.',
   conceptTitle: 'Transistor as a Switch',
-  conceptSummary: 'A base drive path can control a larger collector-emitter path.',
+    track: 'foundations',
   difficulty: 'advanced',
   estimatedMinutes: 22,
   requiredComponents: ['battery-source', 'resistor', 'npn-transistor', 'led'],

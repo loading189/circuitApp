@@ -233,21 +233,72 @@ The left library now supports:
 3. Assign a preview family and preferred kind.
 4. The component automatically participates in library search/filter, inspector metadata, explain/tutor context, and preview resolution.
 
-## Lesson-driven workbook architecture (new)
+## Lesson mode UX simplification standard
+
+Lesson mode now follows a strict UI rule: **only show what advances the current step**.
+
+### Lesson mode vs Sandbox mode
+
+- **Lesson mode**: step-first UI, lesson parts tray, compact postcard, contextual overlays, AI-first right rail, tools hidden until needed.
+- **Sandbox mode**: open exploration with full library and broad instrument access.
+
+### Lesson-parts-first behavior
+
+- Left rail defaults to **Lesson Parts** during lesson support modes.
+- Required components are grouped and clearly marked as `Next`, `Placed`, or `Required`.
+- Optional components are deferred under a collapsed section.
+- A de-emphasized **Show full library** action keeps encyclopedia browsing available without dominating the flow.
+
+### Minimal postcard default
+
+The default postcard is now compact and step-driven:
+
+1. current step action
+2. one-sentence “why”
+3. a single contextual hint (when support mode warrants it)
+4. progress indicator
+
+Expanded details (observations, break-it prompts, step map, mistakes) are now intentionally behind the expanded postcard state.
+
+### Micro-teaching moments
+
+- One-sentence teaching nudges can appear after step completion.
+- Moments are subtle, dismissible, and auto-hide.
+- This keeps teaching contextual instead of front-loading dense explanation.
+
+### Hidden-until-needed tools
+
+- Right rail keeps **Tutor** as the primary always-available intelligence surface.
+- Secondary tools (Inspector, Explain, Diagnostics, Instruments, Flow) are on-demand and easy to hide.
+- Step metadata can suggest a tool contextually without forcing persistent UI clutter.
+
+## Lesson-driven workbook architecture
 
 The lab now ships a first-class lesson domain under `src/features/lessons/`.
 
 ### Lesson model and registry
 
 - `lessonTypes.ts` defines a strongly typed lesson contract:
-  - lesson metadata, difficulty, component requirements, steps, observations, break experiments, checkpoints, tutor hints.
-- `lessonRegistry.ts` registers the first six foundation "verses":
+  - lesson metadata, track hierarchy, component requirements, step schema, observations, break experiments, checkpoints, tutor hints.
+  - step schema supports: action title, success condition, primary highlight target, optional secondary hint target, teaching notes, after-step tidbits, optional tool suggestion, and support-specific guidance.
+- `lessonRegistry.ts` registers the first six foundation "verses" and exposes a scalable track hierarchy:
   1. Closed loop / complete circuit
   2. LED current limiting
   3. Voltage divider
   4. RC charging
   5. Diode direction / forward bias
   6. Transistor switch
+- Registry includes future-ready tracks:
+  - Foundations
+  - Current & resistance
+  - Voltage & division
+  - Time & capacitance
+  - Diodes & polarity
+  - Transistors & switching
+  - Analog building blocks
+  - Digital logic
+  - Measurement & debugging
+  - Power & regulation
 - Lessons are content-driven files in `src/features/lessons/content/foundations/`.
 
 ### Lesson state and progress
@@ -299,6 +350,25 @@ The lesson postcard is now a movable lesson surface (`CircuitPostcard.tsx`):
   - show required parts only
   - highlight lesson components
   - reset lesson board state
+
+## Lesson authoring standard (for future content)
+
+Each lesson should define, at minimum:
+
+- concept + one clear takeaway
+- build goal
+- required and optional parts
+- step sequence with support-aware guidance
+- **one primary highlight target per step**
+- optional secondary hint target
+- success condition per step
+- one-sentence teaching note per step
+- optional after-step micro-teaching note
+- optional tool suggestion
+- observation moment(s)
+- break-it moment(s)
+
+This ensures future lessons stay calm, consistent, and scalable while preserving the step-driven UX model.
 
 ## Lesson-filtered component workflow
 

@@ -53,7 +53,7 @@ export const useLessonStore = create<LessonState>((set, get) => ({
   highlightedOnly: true,
   libraryMode: 'required',
   postcardPinned: false,
-  postcardState: 'expanded',
+  postcardState: 'compact',
   postcardPosition: DEFAULT_POSTCARD_POSITION,
   resetBoardRequestedAt: null,
   activateLesson: (lessonId, supportLevel = get().activeSupportLevel) => {
@@ -66,7 +66,7 @@ export const useLessonStore = create<LessonState>((set, get) => ({
       activeLessonId: resolvedId,
       activeStepIndex: 0,
       activeSupportLevel: supportLevel,
-      postcardState: supportProfile.showPostcardByDefault ? 'expanded' : 'minimized',
+      postcardState: supportProfile.showPostcardByDefault ? 'compact' : 'minimized',
       highlightedOnly: supportLevel === 'guided',
       libraryMode: supportLevel === 'independent' ? 'lesson' : 'required',
       postcardPinned: false,
@@ -126,7 +126,7 @@ export const useLessonStore = create<LessonState>((set, get) => ({
     set({
       activeSupportLevel: level,
       activeStepIndex: 0,
-      postcardState: LESSON_SUPPORT_PROFILES[level].showPostcardByDefault ? 'expanded' : 'minimized',
+      postcardState: LESSON_SUPPORT_PROFILES[level].showPostcardByDefault ? 'compact' : 'minimized',
       highlightedOnly: level === 'guided',
       libraryMode: level === 'independent' ? 'lesson' : 'required',
       postcardPinned: false,

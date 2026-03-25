@@ -15,7 +15,7 @@ interface ToolPanelState {
 }
 
 export const useToolPanelStore = create<ToolPanelState>((set) => ({
-  activePanel: 'inspector',
+  activePanel: 'tutor',
   minimizedPanels: {},
   pinnedPanels: {},
   setActivePanel: (activePanel) => set({ activePanel }),

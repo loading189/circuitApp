@@ -35,10 +35,21 @@ export const resolveStepOverlayTargets = (
     return [];
   }
 
+  const primaryTarget =
+    step.overlayTargets.find((target) => target.id === step.primaryHighlightTargetId) ?? step.overlayTargets[0] ?? null;
+  const secondaryTarget = step.overlayTargets.find((target) => target.id === step.secondaryHintTargetId) ?? null;
+
+  if (!primaryTarget) {
+    return [];
+  }
+
   if (supportLevel === 'guided') {
-    return step.overlayTargets;
+    return secondaryTarget ? [primaryTarget, secondaryTarget] : [primaryTarget];
   }
 
   const profile = LESSON_SUPPORT_PROFILES[supportLevel];
-  return step.overlayTargets.filter((target) => !profile.showExactPlacement ? !isExactTarget(target) : true);
+  if (!profile.showExactPlacement && isExactTarget(primaryTarget)) {
+    return secondaryTarget && !isExactTarget(secondaryTarget) ? [secondaryTarget] : [];
+  }
+  return [primaryTarget];
 };
