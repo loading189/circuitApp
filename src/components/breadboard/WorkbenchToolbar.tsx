@@ -11,7 +11,7 @@ const tools: Array<{ id: ToolMode; label: string }> = [
   { id: 'pan', label: 'Pan' },
 ];
 
-export const WorkbenchToolbar = (): JSX.Element => {
+export const WorkbenchToolbar = (): React.JSX.Element => {
   const toolMode = useSelectionStore((s) => s.toolMode);
   const setToolMode = useSelectionStore((s) => s.setToolMode);
   const setPlacingType = useComponentPlacementStore((s) => s.setPlacingType);

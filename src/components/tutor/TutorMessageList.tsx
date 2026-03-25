@@ -1,6 +1,6 @@
 import type { TutorMessage } from '@/features/tutor/tutorTypes';
 
-export const TutorMessageList = ({ messages }: { messages: TutorMessage[] }): JSX.Element => {
+export const TutorMessageList = ({ messages }: { messages: TutorMessage[] }): React.JSX.Element => {
   if (!messages.length) {
     return <p className="rounded-lg border border-dashed border-token-soft p-3 text-xs text-token-secondary">No messages yet.</p>;
   }

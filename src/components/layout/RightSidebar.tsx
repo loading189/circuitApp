@@ -1,5 +1,5 @@
 import { IntelligenceRail } from './IntelligenceRail';
 
-export const RightSidebar = (): JSX.Element => {
+export const RightSidebar = (): React.JSX.Element => {
   return <IntelligenceRail />;
 };

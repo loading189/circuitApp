@@ -4,7 +4,7 @@ import { FlowOverlay } from '@/components/instruments/FlowOverlay';
 import { CircuitPostcard } from '@/components/learning/CircuitPostcard';
 import { useSimulationStore } from '@/features/simulation/simulationStore';
 
-export const Workbench = (): JSX.Element => {
+export const Workbench = (): React.JSX.Element => {
   const status = useSimulationStore((state) => state.status);
 
   return (

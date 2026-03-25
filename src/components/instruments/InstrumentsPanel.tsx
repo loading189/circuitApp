@@ -2,7 +2,7 @@ import { useBoardStore } from '@/features/board/boardStore';
 import { getActiveLessonContext } from '@/features/lessons/lessonContextAdapter';
 import { useSimulationStore } from '@/features/simulation/simulationStore';
 
-export const InstrumentsPanel = (): JSX.Element => {
+export const InstrumentsPanel = (): React.JSX.Element => {
   const selectedHole = useBoardStore((state) => state.selectedHoleId);
   const snapshot = useSimulationStore((state) => state.snapshot);
   const lessonContext = getActiveLessonContext();

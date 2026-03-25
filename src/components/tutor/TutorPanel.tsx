@@ -4,7 +4,7 @@ import { TutorQuickPrompts } from './TutorQuickPrompts';
 import { TutorStatus } from './TutorStatus';
 import { useTutorStore } from '@/features/tutor/tutorStore';
 
-export const TutorPanel = (): JSX.Element => {
+export const TutorPanel = (): React.JSX.Element => {
   const { messages, isLoading, sendMessage, includeDiagnostics, toggleDiagnostics, useSelectionContext, toggleSelectionContext } = useTutorStore();
 
   return (

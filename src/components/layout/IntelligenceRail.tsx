@@ -16,7 +16,7 @@ const tabs: Array<{ id: ToolPanelId; label: string }> = [
   { id: 'flow', label: 'Flow' },
 ];
 
-export const IntelligenceRail = (): JSX.Element => {
+export const IntelligenceRail = (): React.JSX.Element => {
   const activePanel = useToolPanelStore((state) => state.activePanel);
   const minimizedPanels = useToolPanelStore((state) => state.minimizedPanels);
   const pinnedPanels = useToolPanelStore((state) => state.pinnedPanels);

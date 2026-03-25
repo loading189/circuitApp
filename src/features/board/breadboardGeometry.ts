@@ -39,6 +39,7 @@ const buildStripRows = (
   columns: StripColumn[],
   yOffset: number,
 ): BreadboardHole[] => {
+  const zone: BreadboardHole['zone'] = side === 'left' ? 'left-strip' : 'right-strip';
   return Array.from({ length: ROWS }, (_, rowIndex) => {
     const row = rowIndex + 1;
     return columns.map((column, columnIndex) => {
@@ -46,7 +47,7 @@ const buildStripRows = (
       const y = yOffset + columnIndex * HOLE_STEP_Y;
       return {
         id: stripHoleId(side, column, row),
-        zone: side === 'left' ? 'left-strip' : 'right-strip',
+        zone,
         row,
         column,
         x,
@@ -76,8 +77,8 @@ export const createDefaultBreadboardGeometry = (): BreadboardGeometry => {
 
   const holesById = Object.fromEntries(holes.map((hole) => [hole.id, hole]));
   const stripsByDefaultNet = holes.reduce<Record<string, string[]>>((acc, hole) => {
-    acc[hole.defaultNetGroup] ??= [];
-    acc[hole.defaultNetGroup].push(hole.id);
+    const members = (acc[hole.defaultNetGroup] ??= []);
+    members.push(hole.id);
     return acc;
   }, {});
 

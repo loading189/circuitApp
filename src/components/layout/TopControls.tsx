@@ -10,7 +10,7 @@ const ControlButton = ({ label, onClick }: { label: string; onClick: () => void 
   </button>
 );
 
-export const TopControls = (): JSX.Element => {
+export const TopControls = (): React.JSX.Element => {
   const { run, stop, step, reset } = useSimulationStore();
 
   return (

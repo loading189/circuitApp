@@ -1,7 +1,7 @@
 import { lessonRegistry } from '@/features/lessons/lessonRegistry';
 import { useLessonStore } from '@/features/lessons/lessonStore';
 
-export const LessonPicker = (): JSX.Element => {
+export const LessonPicker = (): React.JSX.Element => {
   const activeLessonId = useLessonStore((state) => state.activeLessonId);
   const activateLesson = useLessonStore((state) => state.activateLesson);
 

@@ -21,7 +21,8 @@ export const resistorBandCode = (ohms: number): string => {
   const d2 = Number(digits[1] ?? '0');
   const multiplier = Math.max(0, digits.length - 2);
   const colors = ['Black', 'Brown', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Violet', 'Gray', 'White'];
-  return `${colors[d1]}-${colors[d2]}-${colors[Math.min(9, multiplier)]}`;
+  const colorAt = (index: number) => colors[index] ?? 'Black';
+  return `${colorAt(d1)}-${colorAt(d2)}-${colorAt(Math.min(9, multiplier))}`;
 };
 
 export const parseResistanceInput = (raw: string): number | null => {
@@ -40,7 +41,7 @@ export const parseResistanceInput = (raw: string): number | null => {
     return null;
   }
 
-  const unit = match[2].toLowerCase();
+  const unit = (match[2] ?? '').toLowerCase();
   if (unit === 'k') {
     return Math.round(base * 1000);
   }

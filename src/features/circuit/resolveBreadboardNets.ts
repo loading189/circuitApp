@@ -28,8 +28,15 @@ export const resolveBreadboardNets = (wires: Wire[] = []): Record<string, string
   const uf = new UnionFind();
 
   for (const stripMembers of Object.values(breadboardModel.stripsByDefaultNet)) {
+    const first = stripMembers[0];
+    if (!first) {
+      continue;
+    }
     for (let i = 1; i < stripMembers.length; i += 1) {
-      uf.union(stripMembers[0], stripMembers[i]);
+      const next = stripMembers[i];
+      if (next) {
+        uf.union(first, next);
+      }
     }
   }
 

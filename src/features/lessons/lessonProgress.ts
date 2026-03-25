@@ -18,8 +18,13 @@ export interface LessonProgressSummary {
 }
 
 const hasRequiredComponents = (required: string[], placed: PlacedComponent[]): boolean => {
-  const placedTypes = new Set<string>(placed.map((component) => component.type));
-  return required.every((requiredType) => placedTypes.has(requiredType));
+  const requiredCounts = new Map<string, number>();
+  const placedCounts = new Map<string, number>();
+
+  required.forEach((type) => requiredCounts.set(type, (requiredCounts.get(type) ?? 0) + 1));
+  placed.forEach((component) => placedCounts.set(component.type, (placedCounts.get(component.type) ?? 0) + 1));
+
+  return [...requiredCounts.entries()].every(([type, count]) => (placedCounts.get(type) ?? 0) >= count);
 };
 
 export const evaluateLessonProgress = (input: LessonProgressInput): LessonProgressSummary => {
@@ -36,8 +41,8 @@ export const evaluateLessonProgress = (input: LessonProgressInput): LessonProgre
       completed.add(checkpoint.id);
     }
     if (checkpoint.type === 'break_experiment' && input.currentStepIndex > 0 && input.lesson.steps[input.currentStepIndex]?.type !== 'break_circuit') {
-      const hasBreakStep = input.lesson.steps.some((step) => step.type === 'break_circuit');
-      if (hasBreakStep) {
+      const breakStepIndex = input.lesson.steps.findIndex((step) => step.type === 'break_circuit');
+      if (breakStepIndex >= 0 && input.currentStepIndex > breakStepIndex) {
         completed.add(checkpoint.id);
       }
     }

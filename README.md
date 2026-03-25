@@ -161,6 +161,13 @@ npm run test
 npm run lint
 ```
 
+Toolchain notes:
+
+- The app expects strict TypeScript (`tsconfig.app.json`) with React JSX typings explicitly enabled (`vite/client`, `react`, `react-dom`).
+- ESLint config uses flat config with `typescript-eslint` + `@eslint/js`.
+- Vitest runs in `jsdom` and uses `src/test/setup.ts`.
+- If your install is stale, run `npm install` again before build/lint/test.
+
 ## Component encyclopedia platform architecture
 
 The component system is now registry-driven so library browse, inspector editing, previews, tutor context, and explain metadata all share a single contract.
@@ -253,6 +260,25 @@ The lab now ships a first-class lesson domain under `src/features/lessons/`.
   - component-library lesson filter mode (`full | lesson | required`)
 - `lessonProgress.ts` evaluates lightweight checkpoints from topology/interaction state.
 - `lessonContextAdapter.ts` exposes normalized context for Tutor, Explain, Diagnostics, and Instruments.
+
+### First three lesson polish focus (current sprint)
+
+This sprint concentrates polish on:
+
+1. LED current limiting
+2. Voltage divider
+3. RC charging
+
+Pattern used for these lessons:
+
+- clearer build goals and step sequencing
+- explicit required parts, observations, and break-it experiments
+- stronger checkpoint coverage (`components_placed`, `topology_connected`, `simulation_run`, `node_probed`, `break_experiment`)
+- lesson-specific tutor quick prompts
+- lesson-aware diagnostics copy and explain hints
+- flow overlay emphasis tuned for these foundational lessons
+
+To polish future lessons, follow the same pattern in each `src/features/lessons/content/...` definition and keep UI surfaces content-driven (postcard, diagnostics, explain, tutor quick prompts).
 
 ## Postcard behavior
 

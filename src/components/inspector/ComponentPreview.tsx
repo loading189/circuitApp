@@ -17,7 +17,7 @@ const logPreviewDiagnostic = (message: string, details?: Record<string, unknown>
 const Component2DFallbackPreview = ({
   component,
   subtitle,
-}: ComponentPreviewProps & { subtitle: string }): JSX.Element => {
+}: ComponentPreviewProps & { subtitle: string }): React.JSX.Element => {
   return (
     <div className="flex h-36 items-center justify-center rounded-lg border border-slate-700 bg-slate-950/70">
       <div className="text-center">
@@ -47,7 +47,7 @@ class PreviewErrorBoundary extends React.Component<{ children: React.ReactNode }
   }
 }
 
-const ModelViewerPreview = ({ assetPath, component }: { assetPath: string; component: PlacedComponent }): JSX.Element => {
+const ModelViewerPreview = ({ assetPath, component }: { assetPath: string; component: PlacedComponent }): React.JSX.Element => {
   const [assetFailed, setAssetFailed] = useState(false);
   const modelViewerAvailable = typeof window !== 'undefined' && typeof window.customElements !== 'undefined'
     ? Boolean(window.customElements.get('model-viewer'))
@@ -92,7 +92,7 @@ const ModelViewerPreview = ({ assetPath, component }: { assetPath: string; compo
   );
 };
 
-const ComponentPreviewContent = ({ component }: ComponentPreviewProps): JSX.Element => {
+const ComponentPreviewContent = ({ component }: ComponentPreviewProps): React.JSX.Element => {
   const preview = resolveComponentPreview(component);
   const safeAssetPath = useMemo(() => preview.assetPath?.trim() ?? '', [preview.assetPath]);
 
@@ -128,7 +128,7 @@ const ComponentPreviewContent = ({ component }: ComponentPreviewProps): JSX.Elem
   return <ModelViewerPreview assetPath={safeAssetPath} component={component} />;
 };
 
-export const ComponentPreview = ({ component }: ComponentPreviewProps): JSX.Element => {
+export const ComponentPreview = ({ component }: ComponentPreviewProps): React.JSX.Element => {
   return (
     <PreviewErrorBoundary>
       <ComponentPreviewContent component={component} />
