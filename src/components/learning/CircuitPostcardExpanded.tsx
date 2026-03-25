@@ -1,5 +1,6 @@
 import type { LessonProgressSummary } from '@/features/lessons/lessonProgress';
 import type { LessonDefinition, LessonSupportLevel } from '@/features/lessons/lessonTypes';
+import { TargetCircuitPreview } from './TargetCircuitPreview';
 
 interface CircuitPostcardExpandedProps {
   lesson: LessonDefinition;
@@ -25,6 +26,7 @@ export const CircuitPostcardExpanded = ({ lesson, stepIndex, progress, expanded,
             <p className="mt-1 text-sm font-semibold text-token-primary">{step?.title ?? 'Lesson complete'}</p>
             <p className="mt-1 text-token-secondary">{guidance}</p>
           </div>
+          {step?.inspectTargetCircuit ? <TargetCircuitPreview payload={step.inspectTargetCircuit} /> : null}
           <p><span className="text-token-secondary">Build goal:</span> {lesson.buildGoal}</p>
           <p><span className="text-token-secondary">Required parts:</span> {lesson.requiredComponents.join(' · ')}</p>
           <div className="rounded-lg border border-emerald-400/25 bg-emerald-500/10 p-2">

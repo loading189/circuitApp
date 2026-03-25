@@ -1,4 +1,5 @@
 import { LESSON_SUPPORT_PROFILES } from './lessonSupportProfiles';
+import { buildOverlayTargetsFromBlueprint } from './lessonBlueprintAdapters';
 import type { LessonDefinition, LessonOverlayTarget, LessonSupportLevel } from './lessonTypes';
 
 const isExactTarget = (target: LessonOverlayTarget): boolean =>
@@ -31,13 +32,22 @@ export const resolveStepOverlayTargets = (
   }
 
   const step = lesson.steps[stepIndex];
-  if (!step?.overlayTargets?.length) {
+  if (!step) {
+    return [];
+  }
+
+  const blueprintTargets = lesson.blueprint
+    ? buildOverlayTargetsFromBlueprint(lesson.blueprint, step.blueprintTargets)
+    : [];
+  const candidateTargets = blueprintTargets.length ? blueprintTargets : (step.overlayTargets ?? []);
+
+  if (!candidateTargets.length) {
     return [];
   }
 
   const primaryTarget =
-    step.overlayTargets.find((target) => target.id === step.primaryHighlightTargetId) ?? step.overlayTargets[0] ?? null;
-  const secondaryTarget = step.overlayTargets.find((target) => target.id === step.secondaryHintTargetId) ?? null;
+    candidateTargets.find((target) => target.id === step.primaryHighlightTargetId) ?? candidateTargets[0] ?? null;
+  const secondaryTarget = candidateTargets.find((target) => target.id === step.secondaryHintTargetId) ?? candidateTargets[1] ?? null;
 
   if (!primaryTarget) {
     return [];
