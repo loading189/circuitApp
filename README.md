@@ -1,33 +1,108 @@
 # Virtual Electronics Lab
 
-Virtual Electronics Lab is a **local-first desktop electronics workbench** built with Tauri + React + TypeScript. It provides a tactile, breadboard-centric learning environment focused on understandable diagnostics and educational simulation rather than full SPICE complexity.
+Virtual Electronics Lab is a **local-first desktop electronics learning workbench** that now combines a premium dark instrument UI, deterministic simulation insight, and an integrated OpenAI-powered tutor through a secure local bridge.
 
-## Current Implementation Status
+## Product layout (current)
 
-This repository currently delivers **Phases 1–3**:
+The app is organized as a four-region workstation:
 
-- ✅ Phase 1: project scaffold, strict TypeScript, Tauri shell, Tailwind, Zustand, base app shell.
-- ✅ Phase 2: realistic SVG breadboard geometry model, deterministic hole IDs, hover strip highlighting, zoom + pan.
-- ✅ Phase 3: component library, typed component models, snap-to-hole placement, selection, rotation, and delete.
+1. **Left visual component library** with category-grouped part tiles and tactile micro-interactions.
+2. **Center breadboard workbench** (SVG) with zoom/pan, placement, selection, and simulation-aware visual energy.
+3. **Floating circuit postcard** that stays visible as a concise lesson/build anchor.
+4. **Right intelligence rail** with tabs for Tutor, Explain, Diagnostics, and Instruments.
 
-Later phases (wiring UX, complete simulation, diagnostics engine, persistence UX polish, instruments) are architected but intentionally not fully implemented yet.
+This design prioritizes “precision workstation” feel: restrained electric accents, strong contrast hierarchy, and compact desktop ergonomics.
 
-## Tech Stack
+## Design-system overview
 
-- **Desktop shell:** Tauri (Rust)
-- **Frontend:** React + TypeScript + Vite
-- **State management:** Zustand (domain-specific stores)
-- **Styling:** Tailwind CSS
-- **Rendering:** SVG-first board and components
-- **Testing:** Vitest
+A tokenized dark-electric theme lives in CSS variables and Tailwind extensions:
 
-## Getting Started
+- layered backgrounds (`--bg-base`, `--bg-panel`, `--bg-elevated`)
+- semantic text and border scales
+- accent/glow/shadow tokens (`--accent-primary`, `--glow-subtle`, `--shadow-elevation`)
+- badge semantics for warning/error/info
+
+Key shell styles and reusable classes are defined in `src/styles/index.css`.
+
+## Learning postcard system
+
+The postcard is content-driven and designed to be deterministic and concise.
+
+Data model (`src/features/learning/postcardTypes.ts`) includes:
+
+- identity, title, concept, summary, build notes
+- observe points and common mistakes
+- progress state and quick actions
+
+The floating UI supports compact, expanded, and minimized states through:
+
+- `CircuitPostcard.tsx`
+- `CircuitPostcardCompact.tsx`
+- `CircuitPostcardExpanded.tsx`
+
+## Intelligence rail
+
+The right rail (`IntelligenceRail.tsx`) provides four focused tabs:
+
+- **Tutor**: OpenAI-backed contextual tutoring
+- **Explain**: deterministic selection explanation engine
+- **Diagnostics**: severity-tagged, clickable findings
+- **Instruments**: node voltage, supply current, and trend surface
+
+## OpenAI tutor architecture (secure local bridge)
+
+### Security model
+
+- The OpenAI key is **never** read in React/frontend code.
+- The frontend sends structured tutor context to a **Tauri command bridge**.
+- The bridge reads `OPENAI_API_KEY` from local environment and calls the OpenAI Responses API.
+
+### Frontend tutor stack
+
+- `src/features/tutor/tutorTypes.ts`: payload + message contracts
+- `src/features/tutor/tutorContextAdapter.ts`: structured context assembly from app stores
+- `src/features/tutor/tutorStore.ts`: conversation state + toggles
+- `src/features/tutor/tutorTransport.ts`: Tauri invoke transport (`ask_tutor`)
+
+### Backend bridge
+
+- `src-tauri/src/main.rs` defines `ask_tutor` command.
+- Uses `reqwest` to call `https://api.openai.com/v1/responses`.
+- Includes structured context and returns tutor text + request ID (when available).
+
+## Structured tutor context
+
+The tutor payload includes app-grounded fields such as:
+
+- mode, active lesson, objectives, current step
+- component inventory and selected entity
+- wire summary and simulation state
+- node voltages and component state summaries
+- diagnostics, recent changes, probe actions
+- user message and conversation continuity
+
+This prevents free-floating chat behavior and keeps guidance tied to trusted app state.
+
+## Deterministic Explain engine
+
+The Explain tab is intentionally **non-AI** and runs via domain logic:
+
+- `src/features/explanations/explainEngine.ts`
+
+It answers:
+
+- what selected item is
+- what it does in the circuit
+- current condition based on simulation/selection
+- why it matters educationally
+
+## Getting started
 
 ### Prerequisites
 
 - Node.js 20+
 - npm 10+
-- Rust toolchain (for Tauri desktop runtime)
+- Rust toolchain (for Tauri)
 
 ### Install
 
@@ -47,73 +122,21 @@ npm run dev
 npm run tauri dev
 ```
 
-### Build
+### Configure OpenAI tutor (local)
+
+Set your key in your shell before launching Tauri:
+
+```bash
+export OPENAI_API_KEY="your_key_here"
+npm run tauri dev
+```
+
+If the key is missing, the tutor gracefully reports bridge configuration failure while Explain/Diagnostics remain available.
+
+### Build and test
 
 ```bash
 npm run build
-```
-
-### Test
-
-```bash
 npm run test
+npm run lint
 ```
-
-## Architecture Overview
-
-The app is organized into domain layers to keep logic composable and testable:
-
-- `features/board`: physical breadboard geometry, hole identity, viewport and selection interaction state.
-- `features/components`: typed component inventory, creation defaults, placement operations, rendering metadata.
-- `features/wiring`: wire types and future wire placement/routing seams.
-- `features/circuit`: connectivity normalization via net resolution and graph formation.
-- `features/simulation`: simulation store and time-step seams for future model-specific solvers.
-- `features/projects`: project serialization contracts and built-in example metadata.
-- `components/*`: UI shell and editor workbench presentation.
-
-This split intentionally mirrors the required long-term architecture: visual model, connectivity model, circuit graph, simulation engine, diagnostics engine, and persistence.
-
-## Breadboard Model Notes
-
-The breadboard uses deterministic hole IDs such as:
-
-- `rail-top-positive-1`
-- `left-a-15`
-- `right-j-15`
-
-Connectivity assumptions in current model:
-
-- left and right strips are separated by the center trench;
-- each row of 5 holes per side is connected (`left-strip-row-N`, `right-strip-row-N`);
-- each power rail is split at midpoint (common physical behavior) into left/right segments.
-
-## Included vs Excluded (Current)
-
-### Included now
-
-- Polished dark shell UI with sidebars + controls.
-- Interactive breadboard rendering with zoom/pan.
-- Strip hover highlighting and node selection.
-- MVP component palette and placement.
-- Rotation + deletion interactions.
-- Foundational net resolution logic with unit tests.
-
-### Excluded for now (future phases)
-
-- Full wire tool UX
-- Circuit simulation engine for all benchmark circuits
-- Diagnostics reasoning engine and board-linked errors
-- Save/load dialogs + native file integration
-- Full instrument readings/waveform plotting
-
-## Simulation Simplification Plan
-
-The final MVP will use an educational, intentional simplified solver with these goals:
-
-- consistent behavior for beginner circuits;
-- explainable diagnostics;
-- discrete-time capacitor updates;
-- heuristic LED/NPN state modeling;
-- no full nonlinear analog convergence.
-
-This preserves clarity and usability while remaining extensible for future SPICE-backed modes.

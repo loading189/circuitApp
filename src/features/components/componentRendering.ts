@@ -16,6 +16,8 @@ export const componentColor = (component: PlacedComponent): string => {
       return '#10b981';
     case 'npn-transistor':
       return '#a78bfa';
+    case 'jumper-wire':
+      return '#22d3ee';
     default:
       return '#e2e8f0';
   }

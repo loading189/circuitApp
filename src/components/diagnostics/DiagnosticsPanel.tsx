@@ -1,10 +1,56 @@
+import { useState } from 'react';
+import { useBoardStore } from '@/features/board/boardStore';
+
+interface DiagnosticItem {
+  id: string;
+  severity: 'info' | 'warning' | 'error';
+  title: string;
+  detail: string;
+  focusNode?: string;
+}
+
+const diagnostics: DiagnosticItem[] = [
+  {
+    id: 'd1',
+    severity: 'info',
+    title: 'Workbench ready',
+    detail: 'Place a source, load element, and return path to begin simulation checks.',
+  },
+  {
+    id: 'd2',
+    severity: 'warning',
+    title: 'Open return path suspected',
+    detail: 'LED branch appears incomplete. Verify cathode path reaches ground rail.',
+    focusNode: 'B-12',
+  },
+];
+
 export const DiagnosticsPanel = (): JSX.Element => {
+  const [openId, setOpenId] = useState<string | null>('d2');
+  const setSelectedHole = useBoardStore((state) => state.setSelectedHole);
+
   return (
-    <section className="rounded-lg border border-slate-800 bg-bench-900/80 p-3">
-      <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-400">Diagnostics</h3>
-      <ul className="space-y-2 text-xs text-slate-300">
-        <li className="rounded border border-emerald-800/60 bg-emerald-500/10 p-2">info · Ready for component placement.</li>
-        <li className="rounded border border-slate-700 p-2 text-slate-400">Simulation diagnostics will appear here in Phase 6+.</li>
+    <section className="rail-panel">
+      <h3 className="panel-title">Diagnostics</h3>
+      <ul className="space-y-2 text-xs">
+        {diagnostics.map((item) => (
+          <li key={item.id} className="rounded-lg border border-token-soft bg-token-elevated/70 p-2">
+            <button
+              type="button"
+              className="flex w-full items-center justify-between gap-2 text-left"
+              onClick={() => {
+                setOpenId((prev) => (prev === item.id ? null : item.id));
+                if (item.focusNode) {
+                  setSelectedHole(item.focusNode);
+                }
+              }}
+            >
+              <span className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${item.severity}-badge`}>{item.severity}</span>
+              <span className="flex-1 text-token-primary">{item.title}</span>
+            </button>
+            {openId === item.id ? <p className="mt-2 text-token-secondary">{item.detail}</p> : null}
+          </li>
+        ))}
       </ul>
     </section>
   );

@@ -8,9 +8,9 @@ export const LeftSidebar = (): JSX.Element => {
   const setPlacingType = useComponentPlacementStore((state) => state.setPlacingType);
 
   return (
-    <aside className="flex h-full w-72 flex-col gap-4 border-r border-slate-800 bg-bench-900/60 p-4">
+    <aside className="panel-shell w-[300px] p-3">
       <section>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">Tools</h2>
+        <h2 className="panel-title">Tooling</h2>
         <div className="grid grid-cols-3 gap-2">
           {[
             ['select', 'Select'],
@@ -20,9 +20,7 @@ export const LeftSidebar = (): JSX.Element => {
             <button
               key={mode}
               type="button"
-              className={`rounded-md border px-2 py-1 text-sm ${
-                toolMode === mode ? 'border-cyan-400 bg-cyan-500/10 text-cyan-200' : 'border-slate-700 text-slate-200'
-              }`}
+              className={`chip-btn ${toolMode === mode ? 'chip-btn-active' : ''}`}
               onClick={() => {
                 setToolMode(mode as 'select' | 'place-component' | 'wire');
                 if (mode !== 'place-component') {
