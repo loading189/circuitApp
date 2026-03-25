@@ -2,6 +2,7 @@ import { useBoardStore } from '@/features/board/boardStore';
 import { useSelectionStore } from '@/features/board/selectionStore';
 import { useComponentPlacementStore } from '@/features/components/componentPlacement';
 import { useSimulationStore } from '@/features/simulation/simulationStore';
+import { useWireStore } from '@/features/wiring/wirePlacement';
 import { useLabUiStore } from '@/features/ui/labUiStore';
 import type { TutorContextPayload, TutorMessage } from './tutorTypes';
 
@@ -12,6 +13,7 @@ export const buildTutorContextPayload = (userMessage: string, conversation: Tuto
   const selectedComponentId = useSelectionStore.getState().selectedComponentId;
   const selectedHoleId = useBoardStore.getState().selectedHoleId;
   const simulation = useSimulationStore.getState();
+  const wires = useWireStore.getState().wires;
 
   return {
     mode,
@@ -27,7 +29,7 @@ export const buildTutorContextPayload = (userMessage: string, conversation: Tuto
       componentId: selectedComponentId ?? undefined,
       nodeId: selectedHoleId ?? undefined,
     },
-    wireSummary: 'Wire editor scaffold active; explicit wire list integration in progress.',
+    wireSummary: `${wires.length} wires placed.`,
     simulationState: simulation.status,
     nodeVoltages: simulation.snapshot.nodeVoltages,
     componentStateSummaries: components.map((component) => `${component.name}: ${component.type} at ${component.terminals.map((terminal) => terminal.holeId).join(', ')}`),

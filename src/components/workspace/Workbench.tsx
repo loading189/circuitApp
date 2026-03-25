@@ -1,4 +1,5 @@
 import { BreadboardSvg } from '@/components/breadboard/BreadboardSvg';
+import { WorkbenchToolbar } from '@/components/breadboard/WorkbenchToolbar';
 import { CircuitPostcard } from '@/components/learning/CircuitPostcard';
 import { useSimulationStore } from '@/features/simulation/simulationStore';
 
@@ -7,7 +8,8 @@ export const Workbench = (): JSX.Element => {
 
   return (
     <main className="relative flex h-full flex-1 flex-col p-3">
-      <div className={`workbench-shell ${status === 'running' ? 'workbench-shell-live' : ''}`}>
+      <div className={`workbench-shell relative ${status === 'running' ? 'workbench-shell-live' : ''}`}>
+        <WorkbenchToolbar />
         <BreadboardSvg />
       </div>
       <CircuitPostcard />

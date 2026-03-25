@@ -15,9 +15,10 @@ describe('resolveBreadboardNets', () => {
     const nets = resolveBreadboardNets([
       {
         id: 'w1',
-        fromHoleId: 'left-a-8',
-        toHoleId: 'right-f-8',
-        color: '#38bdf8',
+        startHoleId: 'left-a-8',
+        endHoleId: 'right-f-8',
+        color: 'blue',
+        style: 'jumper-curved',
       },
     ]);
 

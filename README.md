@@ -96,6 +96,26 @@ It answers:
 - current condition based on simulation/selection
 - why it matters educationally
 
+
+## Workbench maturity updates (wire + resistor sprint)
+
+- Added a first-class **tool bar** inside the workbench with Select / Wire / Probe / Pan and **Reset View**.
+- Added dedicated **Wire mode**: click-to-start, click-to-complete, live preview path, Escape/right-click cancel, and persistent mode for rapid consecutive wiring.
+- Wires are first-class project entities with id, start/end holes, color, style, and routing-ready metadata.
+- Added compact wire color picking (red, black, yellow, blue, green, orange, white) in the toolbar and inspector.
+- Added wire selection + deletion (click to select, Delete/Backspace to remove).
+- Expanded resistor editing with common preset values, custom value parsing (`220`, `2.2k`, `1M`), and quick educational band-code display.
+- Improved inspector coverage for both selected components and selected wires.
+- Added label-density behavior so labels collapse when zoomed out and remain readable under denser builds.
+- Undo/redo was not added in this sprint; state transitions were kept action-centric in stores to support adding history next.
+
+Interaction conventions:
+
+- **Wire mode** remains active after each placed wire.
+- **Escape** cancels in-progress wire placement.
+- **Right click** cancels only an in-progress wire placement.
+- **Pan mode** (or middle mouse drag) pans the viewport.
+
 ## Getting started
 
 ### Prerequisites

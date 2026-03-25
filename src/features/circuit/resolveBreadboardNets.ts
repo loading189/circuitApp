@@ -34,7 +34,7 @@ export const resolveBreadboardNets = (wires: Wire[] = []): Record<string, string
   }
 
   for (const wire of wires) {
-    uf.union(wire.fromHoleId, wire.toHoleId);
+    uf.union(wire.startHoleId, wire.endHoleId);
   }
 
   return breadboardModel.holes.reduce<Record<string, string[]>>((acc, hole) => {
